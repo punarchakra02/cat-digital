@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rental Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background-color: #f4f4f4; }
+        .active { background: #d1ffd1; }
+    </style>
+</head>
+<body>
+    <h2>Rental Dashboard</h2>
+    <table>
+        <tr>
+            <th>Equipment ID</th>
+            <th>User</th>
+            <th>Rental Period</th>
+            <th>Site Info</th>
+            <th>Health Status</th>
+        </tr>
+        {% for item in data %}
+        <tr class="active">
+            <td>{{ item.rental.machine.equipment_id }}</td>
+            <td>{{ item.rental.user_id }}</td>
+            <td>{{ item.rental.start_date }} → {{ item.rental.end_date }}</td>
+            <td>
+                {% if item.usage %}
+                    Site: {{ item.usage.site_id }} <br>
+                    Engine Hours: {{ item.usage.engine_hours }} <br>
+                    Idle Hours: {{ item.usage.idle_hours }}
+                {% else %}
+                    No usage data
+                {% endif %}
+            </td>
+            <td>
+                {% if item.health %}
+                    Temp: {{ item.health.temperature }} °C <br>
+                    Oil Pressure: {{ item.health.oil_pressure }} <br>
+                    Voltage: {{ item.health.system_voltage }}
+                {% else %}
+                    No health data
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No active rentals</td></tr>
+        {% endfor %}
+    </table>
+
+    <script>
+        function randomRefresh() {
+            let interval = Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000;
+            setTimeout(() => { location.reload(); }, interval);
+        }
+        randomRefresh();
+    </script>
+</body>
+</html>
