@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equipment Checkout - {{ machine.equipment_id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .equipment-info {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            border-left: 4px solid #2196f3;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .form-control[readonly] {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        .button-group {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .messages {
+            margin-bottom: 20px;
+        }
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .required {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚜 Equipment Checkout</h1>
+        
+        <!-- Display messages -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Equipment Information (readonly) -->
+        <div class="equipment-info">
+            <h3>📋 Equipment Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Equipment ID</label>
+                    <input type="text" class="form-control" value="{{ machine.equipment_id }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <input type="text" class="form-control" value="{{ machine.type }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <input type="text" class="form-control" value="{{ machine.status }}" readonly>
+                </div>
+            </div>
+        </div>
+
+        {% if is_already_rented %}
+            <!-- Equipment is already rented - show rental information -->
+            <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 20px; margin: 20px 0; border-left: 4px solid #ffc107;">
+                <h3 style="color: #856404; margin-top: 0;">⚠️ Equipment Already Rented</h3>
+                <p style="color: #856404; font-size: 16px; margin-bottom: 20px;">
+                    This equipment is currently checked out and not available for rental.
+                </p>
+                
+                <div style="background-color: white; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                    <h4 style="color: #495057; margin-top: 0;">Current Rental Information:</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Rental ID</label>
+                            <input type="text" class="form-control" value="{{ current_rental.rental_id }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Operator ID</label>
+                            <input type="text" class="form-control" value="{{ current_rental.operator_id }}" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Operator Name</label>
+                            <input type="text" class="form-control" value="{{ current_rental.operator_name }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Site ID</label>
+                            <input type="text" class="form-control" value="{{ current_rental.site_id }}" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Check-out Date</label>
+                            <input type="text" class="form-control" value="{{ current_rental.start_date|date:'M d, Y H:i' }}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Expected Return</label>
+                            <input type="text" class="form-control" value="{{ current_rental.expected_end_date|date:'M d, Y H:i' }}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <a href="{% url 'rental_dashboard' %}" class="btn">📊 View Dashboard</a>
+                <a href="{% url 'add' %}" class="btn btn-secondary">🔙 Back</a>
+            </div>
+
+        {% else %}
+            <!-- Equipment is available - show checkout form -->
+        <form method="POST">
+            {% csrf_token %}
+            
+            <!-- Hidden fields for equipment data -->
+            {{ form.equipment_id.as_hidden }}
+            {{ form.type.as_hidden }}
+            {{ form.status.as_hidden }}
+
+            <h3>👤 Operator Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_operator_id">Operator ID <span class="required">*</span></label>
+                    {{ form.operator_id }}
+                </div>
+                <div class="form-group">
+                    <label for="id_operator_name">Operator Name <span class="required">*</span></label>
+                    {{ form.operator_name }}
+                </div>
+            </div>
+
+            <h3>📍 Site Information</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_site_id">Site ID <span class="required">*</span></label>
+                    {{ form.site_id }}
+                </div>
+                <div class="form-group">
+                    <label for="id_site_name">Site Name</label>
+                    {{ form.site_name }}
+                </div>
+            </div>
+
+            <h3>📅 Checkout Details</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_checkout_date">Checkout Date & Time <span class="required">*</span></label>
+                    {{ form.checkout_date }}
+                </div>
+                <div class="form-group">
+                    <label for="id_expected_return_date">Expected Return Date & Time <span class="required">*</span></label>
+                    {{ form.expected_return_date }}
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn">✅ Approve Checkout</button>
+                <a href="{% url 'add' %}" class="btn btn-secondary">❌ Cancel</a>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+
+    <script>
+        // Set default expected return date to 7 days from checkout date
+        document.getElementById('id_checkout_date').addEventListener('change', function() {
+            const checkoutDate = new Date(this.value);
+            if (!isNaN(checkoutDate)) {
+                const returnDate = new Date(checkoutDate);
+                returnDate.setDate(returnDate.getDate() + 7);
+                
+                // Format as datetime-local
+                const year = returnDate.getFullYear();
+                const month = String(returnDate.getMonth() + 1).padStart(2, '0');
+                const day = String(returnDate.getDate()).padStart(2, '0');
+                const hours = String(returnDate.getHours()).padStart(2, '0');
+                const minutes = String(returnDate.getMinutes()).padStart(2, '0');
+                
+                document.getElementById('id_expected_return_date').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+        });
+    </script>
+</body>
+</html>

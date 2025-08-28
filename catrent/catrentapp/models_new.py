@@ -53,8 +53,15 @@ class Machine(models.Model):
         super().save(*args, **kwargs)
 
     def generate_qr_code(self):
-        # Create QR code with checkout URL for admins
-        checkout_url = f"http://127.0.0.1:8000/checkout/{self.equipment_id}/"
+        # QR code data includes equipment info for admin scanning
+        qr_data = {
+            'equipment_id': self.equipment_id,
+            'type': self.type,
+            'status': self.status,
+        }
+        
+        # Create QR code with equipment data
+        qr_text = f"Equipment ID: {self.equipment_id}\nType: {self.type}\nStatus: {self.status}"
         
         qr = qrcode.QRCode(
             version=1,
@@ -62,7 +69,7 @@ class Machine(models.Model):
             box_size=10,
             border=4,
         )
-        qr.add_data(checkout_url)
+        qr.add_data(qr_text)
         qr.make(fit=True)
 
         img = qr.make_image(fill_color="black", back_color="white")
