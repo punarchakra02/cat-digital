@@ -4,7 +4,7 @@ from .models import Machine, Rental, EquipmentUsage
 class MachineForm(forms.ModelForm):
     class Meta:
         model = Machine
-        fields = ['equipment_id', 'type']
+        fields = ['equipment_id', 'type', 'rate_per_day']
         widgets = {
             'equipment_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., EQX1001'}),
             'type': forms.Select(attrs={'class': 'form-control'}),

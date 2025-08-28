@@ -217,10 +217,35 @@
         <!-- Machine List Section -->
         <div class="section">
             <div class="section-title">Equipment List</div>
+            
+            <!-- Filter Section -->
+            <div class="filter-container" style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 4px;">
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="type-filter">Filter by Type:</label>
+                        <select id="type-filter">
+                            <option value="">All Types</option>
+                            <option value="Excavator">Excavator</option>
+                            <option value="Crane">Crane</option>
+                            <option value="Bulldozer">Bulldozer</option>
+                            <option value="Loader">Loader</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <label for="rate-filter">Filter by Rate (max):</label>
+                        <input type="number" id="rate-filter" placeholder="Maximum rate per day" min="0" step="0.01">
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button id="reset-filters" class="btn" style="background: #7f8c8d; color: white;">Reset Filters</button>
+                    </div>
+                </div>
+            </div>
+            
             <table class="machines-table">
                 <tr>
                     <th>Equipment ID</th>
                     <th>Type</th>
+                    <th>Rate per Day</th>
                     <th>QR Code</th>
                     <th>Actions</th>
                 </tr>
@@ -228,6 +253,7 @@
                 <tr>
                     <td>{{ machine.equipment_id }}</td>
                     <td>{{ machine.type }}</td>
+                    <td>{{ machine.rate_per_day }}</td>
                     <td>
                         {% if machine.qr_code %}
                             <img src="{{ machine.qr_code.url }}" alt="QR Code" style="max-width: 100px; border: 1px solid #e0e0e0; padding: 5px;"><br>
@@ -259,5 +285,51 @@
             </a>
         </div>
     </div>
+
+    <!-- Filter Functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeFilter = document.getElementById('type-filter');
+            const rateFilter = document.getElementById('rate-filter');
+            const resetButton = document.getElementById('reset-filters');
+            const tableRows = document.querySelectorAll('.machines-table tr:not(:first-child)');
+            
+            // Apply filters function
+            function applyFilters() {
+                const selectedType = typeFilter.value;
+                const maxRate = rateFilter.value ? parseFloat(rateFilter.value) : Infinity;
+                
+                tableRows.forEach(row => {
+                    // Skip empty row message
+                    if (row.cells.length <= 2) return;
+                    
+                    const rowType = row.cells[1].textContent.trim();
+                    const rowRate = parseFloat(row.cells[2].textContent.trim());
+                    
+                    // Check if row matches both filters
+                    const matchesType = !selectedType || rowType === selectedType;
+                    const matchesRate = !maxRate || rowRate <= maxRate;
+                    
+                    // Show/hide row based on filter match
+                    row.style.display = (matchesType && matchesRate) ? '' : 'none';
+                });
+            }
+            
+            // Add event listeners to filters
+            typeFilter.addEventListener('change', applyFilters);
+            rateFilter.addEventListener('input', applyFilters);
+            
+            // Reset filters button
+            resetButton.addEventListener('click', function() {
+                typeFilter.value = '';
+                rateFilter.value = '';
+                
+                // Show all rows
+                tableRows.forEach(row => {
+                    row.style.display = '';
+                });
+            });
+        });
+    </script>
 </body>
 </html>

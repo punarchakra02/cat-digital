@@ -10,10 +10,7 @@ EQUIPMENT_TYPES = [
     ('Excavator', 'Excavator'),
     ('Crane', 'Crane'),
     ('Bulldozer', 'Bulldozer'),
-    ('Grader', 'Grader'),
     ('Loader', 'Loader'),
-    ('Compactor', 'Compactor'),
-    ('Dump Truck', 'Dump Truck'),
 ]
 
 # Equipment Status
