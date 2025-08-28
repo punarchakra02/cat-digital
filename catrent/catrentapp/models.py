@@ -55,7 +55,7 @@ class Machine(models.Model):
 
     def generate_qr_code(self):
         # Create QR code with checkout URL for admins
-        checkout_url = f"http://127.0.0.1:8000/checkout/{self.equipment_id}/"
+        checkout_url = f"https://catrent.vercel.app/checkout/{self.equipment_id}/"
         
         qr = qrcode.QRCode(
             version=1,
