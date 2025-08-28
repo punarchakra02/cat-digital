@@ -8,35 +8,322 @@
     <!-- html5-qrcode CDN -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; background: #f5f7fa; }
-        .container { max-width: 1200px; margin: 30px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px #0001; padding: 30px; }
-        h1 { text-align: center; color: #007bff; margin-bottom: 30px; }
-        .section { margin-bottom: 40px; }
-        .section-title { font-size: 1.5em; color: #333; border-left: 5px solid #007bff; padding-left: 10px; margin-bottom: 20px; }
-        .machines-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        .machines-table th, .machines-table td { border: 1px solid #e0e0e0; padding: 10px; text-align: center; }
-        .machines-table th { background: #f0f8ff; }
-        .btn { padding: 8px 18px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
-        .btn-primary { background: #007bff; color: #fff; }
-        .btn-success { background: #28a745; color: #fff; }
-        .btn-danger { background: #dc3545; color: #fff; }
-        .btn-secondary { background: #6c757d; color: #fff; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
-        .flex-row { display: flex; gap: 30px; flex-wrap: wrap; }
-        .card { background: #f8f9fa; border-radius: 8px; box-shadow: 0 1px 4px #0001; padding: 20px; flex: 1; min-width: 300px; }
-        #qr-reader { width: 350px; margin: 0 auto; }
-        .chart-container { width: 100%; max-width: 600px; margin: 0 auto; }
+        /* Global Styles */
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; 
+            background: #f5f7fa;
+            min-height: 100vh;
+            color: #2c3e50;
+        }
+        
+        .container { 
+            width: 100%; 
+            margin: 0; 
+            background: #ffffff; 
+            padding: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        h1 { 
+            text-align: center; 
+            color: #2c3e50;
+            margin-bottom: 40px; 
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .section { 
+            margin-bottom: 40px; 
+            background: #ffffff;
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .section-title { 
+            font-size: 1.4rem; 
+            color: #2c3e50; 
+            border-left: 3px solid #3498db; 
+            padding-left: 12px; 
+            margin-bottom: 20px; 
+            font-weight: 600;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-header .section-title {
+            margin-bottom: 0;
+        }
+        
+        .section-controls {
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-control {
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            font-size: 0.9rem;
+            min-width: 180px;
+        }
+        
+        select.form-control {
+            background-color: #fff;
+            cursor: pointer;
+        }
+        
+        .forecast-container {
+            min-height: 300px;
+            background-color: #ffffff;
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .machines-table { 
+            width: 100%; 
+            border-collapse: collapse;
+            margin-bottom: 20px; 
+        }
+        
+        .machines-table th, .machines-table td { 
+            padding: 14px 16px; 
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .machines-table th { 
+            background: #2c3e50;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            position: sticky;
+            top: 0;
+        }
+        
+        .machines-table td {
+            background: #ffffff;
+        }
+        
+        .machines-table tr:hover td {
+            background-color: #f8f9fa;
+        }
+        
+        .machines-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .btn { 
+            padding: 10px 18px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary { 
+            background: #3498db;
+            color: #fff; 
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-success { 
+            background: #2ecc71;
+            color: #fff; 
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .btn-danger { 
+            background: #e74c3c;
+            color: #fff; 
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-secondary { 
+            background: #7f8c8d;
+            color: #fff; 
+        }
+        
+        .btn-secondary:hover {
+            background: #6c7a7a;
+        }
+        
+        .btn:disabled { 
+            background: #e9ecef; 
+            color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .flex-row { 
+            display: flex; 
+            gap: 20px; 
+            flex-wrap: wrap; 
+        }
+        
+        .card { 
+            background: #ffffff; 
+            border: 1px solid #e0e0e0; 
+            padding: 20px; 
+            flex: 1; 
+            min-width: 320px;
+        }
+        
+        #qr-reader { 
+            width: 350px; 
+            margin: 20px auto;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .chart-container { 
+            width: 100%; 
+            max-width: 600px; 
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-good { 
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .status-warning { 
+            background: #f39c12;
+            color: white;
+        }
+        
+        .status-critical { 
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .status-maintenance { 
+            background: #3498db;
+            color: white;
+        }
+        
+        .status-available {
+            background: #2ecc71;
+            color: white;
+        }
 
         /* QR Modal */
-        #checkin-qr-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
-            background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center; }
-        #checkin-qr-modal .modal-box { background:#fff; padding:20px; border-radius:10px; 
-            max-width:400px; width:100%; text-align:center; }
+        #checkin-qr-modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.5); 
+            z-index: 1000; 
+            justify-content: center; 
+            align-items: center;
+        }
+        
+        #checkin-qr-modal .modal-box { 
+            background: #ffffff; 
+            padding: 30px; 
+            border: 1px solid #e0e0e0;
+            max-width: 400px; 
+            width: 90%; 
+            text-align: center;
+        }
+        
+        #checkin-qr-modal h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 25px;
+            }
+            
+            .section {
+                padding: 15px;
+                margin-bottom: 25px;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+            
+            .machines-table {
+                font-size: 0.9rem;
+            }
+            
+            .machines-table th, .machines-table td {
+                padding: 10px 8px;
+            }
+            
+            .btn {
+                padding: 8px 14px;
+                font-size: 0.85rem;
+            }
+            
+            #qr-reader {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .machines-table th, .machines-table td {
+                padding: 8px 4px;
+                font-size: 0.8rem;
+            }
+            
+            .btn {
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
 <div class="container">
-    <h1>🚜 Equipment Rental Dashboard</h1>
+    <h1>Equipment Rental Dashboard</h1>
 
     <!-- QR Code Scan Section -->
     <div class="section">
@@ -74,18 +361,18 @@
                 <td>
                     {% if item.health %}
                         {% if item.health.status == "Good" %}
-                            <span style="color:#28a745;">{{ item.health.status }}</span>
+                            <span class="status-badge status-good">{{ item.health.status }}</span>
                         {% elif item.health.status == "Warning" %}
-                            <span style="color:#ffc107;">{{ item.health.status }}</span>
+                            <span class="status-badge status-warning">{{ item.health.status }}</span>
                         {% elif item.health.status == "Critical" %}
-                            <span style="color:#fd7e14;">{{ item.health.status }}</span>
+                            <span class="status-badge status-critical">{{ item.health.status }}</span>
                         {% elif item.health.status == "Maintenance Required" %}
-                            <span style="color:#dc3545;">{{ item.health.status }}</span>
+                            <span class="status-badge status-maintenance">{{ item.health.status }}</span>
                         {% else %}
-                            <span style="color:#6c757d;">{{ item.health.status }}</span>
+                            <span class="status-badge" style="background: #6c757d; color: white;">{{ item.health.status }}</span>
                         {% endif %}
                     {% else %}
-                        <span style="color:#6c757d;">No Data</span>
+                        <span class="status-badge" style="background: #6c757d; color: white;">No Data</span>
                     {% endif %}
                 </td>
                 <td>
@@ -101,6 +388,24 @@
             </tr>
             {% endfor %}
         </table>
+    </div>
+    
+    <!-- Demand Forecast Section -->
+    <div class="section">
+        <div class="section-header">
+            <div class="section-title">Demand Forecast</div>
+            <div class="section-controls">
+                <select id="forecast-equipment-type" class="form-control">
+                    <option value="Bulldozer">Bulldozer</option>
+                    <option value="Excavator">Excavator</option>
+                    <option value="Loader">Loader</option>
+                    <option value="Crane">Crane</option>
+                </select>
+            </div>
+        </div>
+        <div id="forecast-container" class="forecast-container">
+            <!-- This empty container will be filled with forecast data -->
+        </div>
     </div>
 
     <!-- Real-Time Health Chart -->
@@ -128,7 +433,7 @@
             <tr>
                 <td>{{ machine.equipment_id }}</td>
                 <td>{{ machine.type }}</td>
-                <td><span style="color:#28a745;">Available</span></td>
+                <td><span class="status-badge status-available">Available</span></td>
                 <td>
                     <a href="{% url 'checkout' machine.equipment_id %}" class="btn btn-primary">Rent</a>
                 </td>
@@ -165,6 +470,7 @@ function showQrScanner() {
 }
 
 window.onload = function() {
+    // Initialize health chart
     const healthData = JSON.parse(document.getElementById('health-chart-data').textContent);
     const ctx = document.getElementById('healthChart').getContext('2d');
     new Chart(ctx, {
@@ -183,6 +489,11 @@ window.onload = function() {
             }
         }
     });
+    
+    // Initialize forecast section
+    document.getElementById('forecast-equipment-type').addEventListener('change', handleForecastEquipmentChange);
+    // Load initial forecast data
+    handleForecastEquipmentChange();
 };
 
 // ---------------- Check-in QR Scanner ----------------
@@ -244,6 +555,31 @@ function closeCheckinQr() {
     if (checkinQrScanner) {
         checkinQrScanner.stop();
     }
+}
+
+// Forecast equipment type change handler
+function handleForecastEquipmentChange() {
+    const equipmentType = document.getElementById('forecast-equipment-type').value;
+    const forecastContainer = document.getElementById('forecast-container');
+    
+    // This is a placeholder - you can replace this with actual forecast data loading
+    forecastContainer.innerHTML = `<div style="text-align: center; padding: 30px;">
+        <p>Loading forecast data for ${equipmentType}...</p>
+        <div style="margin: 20px 0;">
+            <div style="width: 50px; height: 50px; border: 5px solid #f3f3f3; 
+                 border-top: 5px solid #3498db; border-radius: 50%; 
+                 margin: 0 auto; animation: spin 2s linear infinite;"></div>
+        </div>
+        <p style="color: #7f8c8d;">You can implement actual forecast data retrieval here</p>
+    </div>`;
+    
+    // You would typically fetch actual forecast data from your backend here
+    // Example:
+    // fetch('/api/forecast/' + equipmentType)
+    //   .then(response => response.json())
+    //   .then(data => {
+    //     // Render the forecast data
+    //   });
 }
 
 // Helper: Get CSRF Token
