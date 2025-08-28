@@ -1,5 +1,6 @@
 import qrcode
 from io import BytesIO
+from django.http import HttpResponse
 from django.core.files import File
 from django.db import models
 from django.utils import timezone
@@ -54,9 +55,8 @@ class Machine(models.Model):
         super().save(*args, **kwargs)
 
     def generate_qr_code(self):
-        # Create QR code with checkout URL for admins
-        checkout_url = f"https://catrent.vercel.app/checkout/{self.equipment_id}/"
-        
+        # Generate a QR code with the equipment checkout URL
+        checkout_url = f"http://127.0.0.1:8000/checkout/{self.equipment_id}/"
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -66,13 +66,25 @@ class Machine(models.Model):
         qr.add_data(checkout_url)
         qr.make(fit=True)
 
+        # Save QR as image in memory
         img = qr.make_image(fill_color="black", back_color="white")
         buffer = BytesIO()
-        img.save(buffer, format='PNG')
+        img.save(buffer, format="PNG")
         buffer.seek(0)
 
+        # Save image file to model field
         filename = f"qr_{self.equipment_id}.png"
         self.qr_code.save(filename, File(buffer), save=False)
+        buffer.close()
+
+    def save(self, *args, **kwargs):
+        # Call parent save first (so equipment_id exists)
+        super().save(*args, **kwargs)
+
+        # Generate QR if not already created
+        if not self.qr_code:
+            self.generate_qr_code()
+            super().save(*args, **kwargs)
 
 
 class Rental(models.Model):

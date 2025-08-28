@@ -38,8 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'catrentapp'
+    'catrentapp',"cloudinary", "cloudinary_storage"
 ]
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dym8cnhnc',
+    'API_KEY': '924396718966761',
+    'API_SECRET': '8RsnxxUhTUq-s9X1MqODX3lfpRA',
+}
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -128,8 +136,6 @@ import os
 
 STATIC_URL = 'static/'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
