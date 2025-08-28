@@ -2,59 +2,157 @@
 <html>
 <head>
     <title>Rental Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html5-qrcode CDN -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-        th { background-color: #f4f4f4; }
-        .active { background: #d1ffd1; }
+        body { font-family: Arial, sans-serif; margin: 0; background: #f5f7fa; }
+        .container { max-width: 1200px; margin: 30px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 10px #0001; padding: 30px; }
+        h1 { text-align: center; color: #007bff; margin-bottom: 30px; }
+        .section { margin-bottom: 40px; }
+        .section-title { font-size: 1.5em; color: #333; border-left: 5px solid #007bff; padding-left: 10px; margin-bottom: 20px; }
+        .machines-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .machines-table th, .machines-table td { border: 1px solid #e0e0e0; padding: 10px; text-align: center; }
+        .machines-table th { background: #f0f8ff; }
+        .btn { padding: 8px 18px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
+        .btn-primary { background: #007bff; color: #fff; }
+        .btn-success { background: #28a745; color: #fff; }
+        .btn-danger { background: #dc3545; color: #fff; }
+        .btn-secondary { background: #6c757d; color: #fff; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .flex-row { display: flex; gap: 30px; flex-wrap: wrap; }
+        .card { background: #f8f9fa; border-radius: 8px; box-shadow: 0 1px 4px #0001; padding: 20px; flex: 1; min-width: 300px; }
+        #qr-reader { width: 350px; margin: 0 auto; }
+        .chart-container { width: 100%; max-width: 600px; margin: 0 auto; }
     </style>
 </head>
 <body>
-    <h2>Rental Dashboard</h2>
-    <table>
-        <tr>
-            <th>Equipment ID</th>
-            <th>User</th>
-            <th>Rental Period</th>
-            <th>Site Info</th>
-            <th>Health Status</th>
-        </tr>
-        {% for item in data %}
-        <tr class="active">
-            <td>{{ item.rental.machine.equipment_id }}</td>
-            <td>{{ item.rental.user_id }}</td>
-            <td>{{ item.rental.start_date }} → {{ item.rental.end_date }}</td>
-            <td>
-                {% if item.usage %}
-                    Site: {{ item.usage.site_id }} <br>
-                    Engine Hours: {{ item.usage.engine_hours }} <br>
-                    Idle Hours: {{ item.usage.idle_hours }}
-                {% else %}
-                    No usage data
-                {% endif %}
-            </td>
-            <td>
-                {% if item.health %}
-                    Temp: {{ item.health.temperature }} °C <br>
-                    Oil Pressure: {{ item.health.oil_pressure }} <br>
-                    Voltage: {{ item.health.system_voltage }}
-                {% else %}
-                    No health data
-                {% endif %}
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5">No active rentals</td></tr>
-        {% endfor %}
-    </table>
+<div class="container">
+    <h1>🚜 Equipment Rental Dashboard</h1>
 
-    <script>
-        function randomRefresh() {
-            let interval = Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000;
-            setTimeout(() => { location.reload(); }, interval);
+    <!-- QR Code Scan Section -->
+    <div class="section">
+        <div class="section-title">Scan Equipment QR Code</div>
+        <div style="text-align:center;">
+            <button class="btn btn-primary" onclick="showQrScanner()">Scan QR Code</button>
+        </div>
+        <div id="qr-reader" style="display:none;"></div>
+    </div>
+
+    <!-- Rented Machines Section -->
+    <div class="section">
+        <div class="section-title">Currently Rented Machines</div>
+        <table class="machines-table">
+            <tr>
+                <th>Equipment ID</th>
+                <th>Operator</th>
+                <th>Rental Period</th>
+                <th>Site</th>
+                <th>Health</th>
+                <th>Actions</th>
+            </tr>
+            {% for item in rented %}
+            <tr>
+                <td>{{ item.rental.machine.equipment_id }}</td>
+                <td>{{ item.rental.operator_name }}<br><small>ID: {{ item.rental.operator_id }}</small></td>
+                <td>{{ item.rental.start_date|date:"M d, Y H:i" }}<br>→<br>{{ item.rental.expected_end_date|date:"M d, Y H:i" }}</td>
+                <td>{{ item.rental.site_name|default:item.rental.site_id }}</td>
+                <td>
+                    {% if item.health %}
+                        <span style="color:{{ item.health.status|yesno:'#28a745,#dc3545' }};">
+                            {{ item.health.status }}
+                        </span>
+                    {% else %}
+                        <span style="color:#6c757d;">No Data</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="post" action="{% url 'checkin_machine' item.rental.id %}">
+                        {% csrf_token %}
+                        <button class="btn btn-success" type="submit">Check In</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6">No active rentals</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- Real-Time Health Section -->
+    <div class="section">
+        <div class="section-title">Real-Time Equipment Health Overview</div>
+        <div class="chart-container">
+            <canvas id="healthChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Available Machines Section -->
+    <div class="section">
+        <div class="section-title">Available Machines</div>
+        <table class="machines-table">
+            <tr>
+                <th>Equipment ID</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            {% for machine in available %}
+            <tr>
+                <td>{{ machine.equipment_id }}</td>
+                <td>{{ machine.type }}</td>
+                <td><span style="color:#28a745;">Available</span></td>
+                <td>
+                    <a href="{% url 'rent_machine' machine.equipment_id %}" class="btn btn-primary">Rent</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">No available machines</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+<script>
+function showQrScanner() {
+    document.getElementById('qr-reader').style.display = 'block';
+    if (!window.qrScannerStarted) {
+        window.qrScannerStarted = true;
+        const qrReader = new Html5Qrcode("qr-reader");
+        qrReader.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            qrCodeMessage => {
+                // Redirect to the scanned URL (should be your checkout URL)
+                window.location.href = qrCodeMessage;
+            },
+            errorMessage => {}
+        );
+    }
+}
+
+// Chart.js for health status
+window.onload = function() {
+    const ctx = document.getElementById('healthChart').getContext('2d');
+    const healthData = {{ health_chart_data|safe }};
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: healthData.labels,
+            datasets: [{
+                data: healthData.data,
+                backgroundColor: ['#28a745', '#ffc107', '#fd7e14', '#dc3545'],
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { position: 'bottom' }
+            }
         }
-        randomRefresh();
-    </script>
+    });
+};
+</script>
 </body>
 </html>

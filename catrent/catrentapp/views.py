@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import timedelta
 from .models import Machine, Rental, EquipmentUsage, EquipmentHealth
 from django.contrib import messages
+from django.views.decorators.csrf import csrf_exempt
 
 
 def add(request):
@@ -76,10 +77,13 @@ def rent_machine(request, machine_id):
                 site_id=site_id,
                 site_name=site_name,
                 expected_end_date=expected_end_date,
-                rental_cost_per_day=machine.list_price_per_day,
                 active=True,
                 status='Active'
             )
+            # Update machine status
+            machine.status = 'Rented'
+            machine.save()
+
             messages.success(request, f'Machine {machine.equipment_id} rented successfully!')
             return redirect("rental_dashboard")
 
@@ -91,28 +95,43 @@ def rent_machine(request, machine_id):
 
 
 def rental_dashboard(request):
-    """Dashboard showing all active rentals with live status"""
+    """Modern dashboard with sections and health chart data."""
     try:
-        rentals = Rental.objects.filter(status='Active').select_related('machine')
-
-        context = []
-        for rental in rentals:
-            # Get latest usage data
-            latest_usage = rental.machine.usages.order_by('-date').first()
-            # Get latest health record
+        # Rented machines (active rentals)
+        rented_qs = Rental.objects.filter(active=True, status='Active').select_related('machine')
+        rented = []
+        for rental in rented_qs:
             latest_health = rental.machine.health_records.order_by('-timestamp').first()
-            
-            context.append({
+            rented.append({
                 "rental": rental,
-                "usage": latest_usage,
                 "health": latest_health,
             })
 
-        return render(request, "rental_dashboard.html", {"data": context})
-        
+        # Available machines (not currently rented)
+        available = Machine.objects.filter(status='Available')
+
+        # Health chart data
+        health_counts = {
+            'Good': 0, 'Warning': 0, 'Critical': 0, 'Maintenance Required': 0
+        }
+        for h in EquipmentHealth.objects.order_by('-timestamp').distinct('machine'):
+            if h.status in health_counts:
+                health_counts[h.status] += 1
+        health_chart_data = {
+            "labels": list(health_counts.keys()),
+            "data": list(health_counts.values())
+        }
+
+        return render(request, "rental_dashboard.html", {
+            "rented": rented,
+            "available": available,
+            "health_chart_data": health_chart_data,
+        })
     except Exception as e:
         messages.error(request, f'Error loading dashboard: {str(e)}')
-        return render(request, "rental_dashboard.html", {"data": []})
+        return render(request, "rental_dashboard.html", {
+            "rented": [], "available": [], "health_chart_data": {"labels":[], "data":[]}
+        })
 
 
 def qr_scan_info(request, equipment_id):
@@ -179,3 +198,19 @@ def qr_scan_info(request, equipment_id):
     except Exception as e:
         messages.error(request, f'Error processing checkout: {str(e)}')
         return redirect('add')
+
+
+# Check-in view
+@csrf_exempt
+def checkin_machine(request, rental_id):
+    """Check in a rented machine."""
+    rental = get_object_or_404(Rental, id=rental_id)
+    if request.method == "POST":
+        rental.active = False
+        rental.status = 'Completed'
+        rental.actual_end_date = timezone.now()
+        rental.machine.status = 'Available'
+        rental.machine.save()
+        rental.save()
+        messages.success(request, f"Machine {rental.machine.equipment_id} checked in successfully!")
+    return redirect('rental_dashboard')
