@@ -8,216 +8,557 @@
         * { box-sizing: border-box; }
         
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0; 
-            background: #f5f7fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
             min-height: 100vh;
-            color: #2c3e50;
+            color: #1a1a1a;
+            line-height: 1.6;
         }
         
         .container { 
-            width: 100%; 
-            margin: 0; 
+            max-width: 1400px;
+            margin: 0 auto; 
             background: #ffffff; 
-            padding: 30px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.05);
+            min-height: 100vh;
         }
         
         h1, h2 { 
             text-align: center; 
-            color: #2c3e50;
-            margin-bottom: 40px; 
-            font-size: 2.2rem;
-            font-weight: 600;
-            letter-spacing: -0.5px;
+            color: #1a1a1a;
+            margin-bottom: 50px; 
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
         }
         
-        h3 {
-            font-size: 1.4rem;
-            color: #2c3e50; 
-            border-left: 3px solid #3498db; 
-            padding-left: 12px; 
-            margin-bottom: 20px; 
-            font-weight: 600;
+        .section-title { 
+            font-size: 1.6rem; 
+            color: #1a1a1a; 
+            margin-bottom: 30px; 
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 6px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffd700, #1a1a1a);
+            border-radius: 3px;
         }
         
         .section { 
-            margin-bottom: 40px; 
+            margin-bottom: 50px; 
             background: #ffffff;
-            padding: 20px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ffb300, #1a1a1a);
         }
         
         .form-container { 
             margin-bottom: 30px; 
-            background: #ffffff;
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            padding: 30px;
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+        }
+        
+        /* Card Layout for Equipment */
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .equipment-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .equipment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+            border-color: #ffd700;
+        }
+        
+        .equipment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ffd700, #ffb300);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .equipment-card:hover::before {
+            opacity: 1;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .equipment-id {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+        
+        .equipment-type {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 500;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #1a1a1a;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .qr-section {
+            text-align: center;
+            margin: 20px 0;
             padding: 20px;
-            border: 1px solid #e0e0e0;
+            background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+            border-radius: 12px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .qr-code-img {
+            max-width: 120px;
+            border: 2px solid #ffd700;
+            padding: 8px;
+            border-radius: 8px;
+            background: #ffffff;
+            margin-bottom: 15px;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        /* Table View Toggle */
+        .view-toggle {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 25px;
+            border: 2px solid #f0f0f0;
+            max-width: 300px;
+        }
+        
+        .toggle-btn {
+            flex: 1;
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+        
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #1a1a1a;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
         }
         
         .machines-table { 
             width: 100%; 
             border-collapse: collapse;
-            margin-bottom: 20px; 
+            margin-bottom: 20px;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            display: none;
         }
         
         .machines-table th, .machines-table td { 
-            padding: 14px 16px; 
+            padding: 16px;
             text-align: center;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #f0f0f0;
         }
         
         .machines-table th { 
-            background: #2c3e50;
-            color: white;
-            font-weight: 600;
-            font-size: 0.85rem;
+            background: linear-gradient(135deg, #1a1a1a, #333333);
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 0.9rem;
             position: sticky;
             top: 0;
         }
         
         .machines-table td {
             background: #ffffff;
+            font-weight: 500;
         }
         
         .machines-table tr:hover td {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #fafafa, #f5f5f5);
+        }
+        
+        .machines-table tr:last-child td {
+            border-bottom: none;
         }
         
         button, .btn { 
-            padding: 10px 18px; 
+            padding: 12px 20px; 
             border: none; 
-            border-radius: 4px; 
+            border-radius: 8px; 
             cursor: pointer; 
             font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            font-weight: 600;
+            transition: all 0.3s ease;
             margin-right: 10px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 120px;
         }
         
         .btn-add { 
-            background: #2ecc71;
-            color: white; 
+            background: linear-gradient(135deg, #1a1a1a, #333333);
+            color: #ffd700; 
+            border: 2px solid #ffd700;
         }
         
         .btn-add:hover {
-            background: #27ae60;
+            background: linear-gradient(135deg, #333333, #1a1a1a);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 26, 26, 0.3);
         }
         
         .btn-delete { 
-            background: #e74c3c;
+            background: linear-gradient(135deg, #ff4757, #ff3742);
             color: white; 
+            border: 2px solid transparent;
         }
         
         .btn-delete:hover {
-            background: #c0392b;
+            background: linear-gradient(135deg, #ff3742, #ff2f3c);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
         }
         
         .btn-download { 
-            background: #3498db;
-            color: white; 
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #1a1a1a; 
+            border: 2px solid transparent;
         }
         
         .btn-download:hover {
-            background: #2980b9;
+            background: linear-gradient(135deg, #ffb300, #ff9800);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            border: 2px solid transparent;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a6268, #495057);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
         }
         
         button:disabled, .btn:disabled { 
-            background: #e9ecef; 
-            color: #95a5a6;
+            background: #f8f9fa; 
+            color: #6c757d;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         input, select { 
             width: 100%;
-            padding: 10px;
-            border: 1px solid #e0e0e0;
-            font-size: 14px;
-            margin-bottom: 15px;
+            padding: 12px 16px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            background: #ffffff;
+            font-weight: 500;
         }
         
         input:focus, select:focus {
-            border-color: #3498db;
+            border-color: #ffd700;
             outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
         }
         
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #2c3e50;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         /* Form styles */
         form p {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+            border: none;
+            padding: 0;
+        }
+        
+        .navigation-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+            border-radius: 16px;
+            border: 2px solid #f0f0f0;
         }
         
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
-                padding: 15px;
+                padding: 20px;
             }
             
             h1, h2 {
-                font-size: 1.8rem;
-                margin-bottom: 25px;
+                font-size: 2.2rem;
+                margin-bottom: 30px;
             }
             
-            h3 {
-                font-size: 1.2rem;
+            .section-title {
+                font-size: 1.3rem;
             }
             
-            .machines-table th, .machines-table td {
-                padding: 10px 8px;
+            .equipment-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .equipment-card {
+                padding: 20px;
+            }
+            
+            .card-actions {
+                flex-direction: column;
             }
             
             button, .btn {
-                padding: 8px 14px;
+                padding: 10px 16px;
                 font-size: 0.85rem;
+                min-width: 100px;
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            input, select {
+                padding: 10px 12px;
             }
         }
         
         @media (max-width: 480px) {
-            .machines-table th, .machines-table td {
-                padding: 8px 4px;
-                font-size: 0.8rem;
+            .equipment-card {
+                padding: 15px;
+            }
+            
+            .equipment-id {
+                font-size: 1.2rem;
+            }
+            
+            .qr-code-img {
+                max-width: 100px;
             }
             
             button, .btn {
-                padding: 6px 10px;
-                font-size: 0.75rem;
-                margin-bottom: 5px;
-                width: 100%;
-                margin-right: 0;
+                padding: 8px 12px;
+                font-size: 0.8rem;
             }
             
             input, select {
-                padding: 8px;
+                padding: 8px 10px;
             }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .equipment-card {
+            animation: fadeInUp 0.6s ease-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Equipment Manager</h1>
+        <h1>⚙️ Equipment Manager</h1>
         
         <!-- Add Machine Section -->
         <div class="section">
-            <div class="section-title">Add New Equipment</div>
+            <div class="section-title">➕ Add New Equipment</div>
             <div class="form-container">
                 <form method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <button type="submit" class="btn btn-add">Add Equipment</button>
+                    <button type="submit" class="btn btn-add">🚀 Add Equipment</button>
                 </form>
             </div>
         </div>
 
         <!-- Machine List Section -->
         <div class="section">
-            <div class="section-title">Equipment List</div>
-            <table class="machines-table">
+            <div class="section-title">📋 Equipment List</div>
+            
+            <!-- Search and Controls -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <div style="position: relative;">
+                        <input type="text" id="searchInput" placeholder="🔍 Search by Equipment ID or Type..." 
+                               style="padding-left: 45px; margin-bottom: 0;" oninput="searchEquipment()">
+                        <span style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #666; font-size: 1.1rem;">🔍</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <select id="typeFilter" onchange="filterByType()" style="min-width: 150px; margin-bottom: 0;">
+                        <option value="">All Types</option>
+                        <option value="Bulldozer">Bulldozer</option>
+                        <option value="Excavator">Excavator</option>
+                        <option value="Loader">Loader</option>
+                        <option value="Crane">Crane</option>
+                    </select>
+                    <div class="view-toggle" style="margin-bottom: 0;">
+                        <button class="toggle-btn active" onclick="toggleView('cards')">Card View</button>
+                        <button class="toggle-btn" onclick="toggleView('table')">Table View</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Counter -->
+            <div id="resultsCounter" style="margin-bottom: 20px; color: #666; font-weight: 500;">
+                <span id="resultCount">{{ machines|length }}</span> equipment found
+            </div>
+            
+            <!-- Card View -->
+            <div id="cards-view" class="equipment-grid">
+                {% for machine in machines %}
+                <div class="equipment-card" data-equipment-id="{{ machine.equipment_id|lower }}" data-equipment-type="{{ machine.type|lower }}">
+                    <div class="card-header">
+                        <div>
+                            <div class="equipment-id">{{ machine.equipment_id }}</div>
+                        </div>
+                        <div class="equipment-type">{{ machine.type }}</div>
+                    </div>
+                    
+                    <div class="qr-section">
+                        {% if machine.qr_code %}
+                            <img src="{{ machine.qr_code.url }}" alt="QR Code" class="qr-code-img">
+                            <div style="margin-top: 15px;">
+                                <span style="color: #20bf6b; font-weight: 600; font-size: 0.9rem;">✅ QR Code Generated</span>
+                            </div>
+                        {% else %}
+                            <div style="padding: 40px; color: #666;">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">📱</div>
+                                <span style="font-weight: 500;">QR Code Not Generated</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-actions">
+                        {% if machine.qr_code %}
+                            <a href="{% url 'download_qr' machine.id %}" class="btn btn-download">
+                                💾 Download QR
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'delete_machine' machine.id %}" class="btn btn-delete">
+                            🗑️ Delete
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <h3>No Equipment Added Yet</h3>
+                    <p>Start by adding your first piece of equipment using the form above.</p>
+                </div>
+                {% endfor %}
+                
+                <!-- No Results State -->
+                <div id="noResultsState" class="empty-state" style="display: none;">
+                    <h3>🔍 No Equipment Found</h3>
+                    <p>Try adjusting your search criteria or filters.</p>
+                    <button onclick="clearSearch()" class="btn btn-secondary" style="margin-top: 15px;">Clear Search</button>
+                </div>
+            </div>
+            
+            <!-- Table View -->
+            <table id="table-view" class="machines-table">
                 <tr>
                     <th>Equipment ID</th>
                     <th>Type</th>
@@ -225,39 +566,178 @@
                     <th>Actions</th>
                 </tr>
                 {% for machine in machines %}
-                <tr>
-                    <td>{{ machine.equipment_id }}</td>
-                    <td>{{ machine.type }}</td>
+                <tr class="table-row" data-equipment-id="{{ machine.equipment_id|lower }}" data-equipment-type="{{ machine.type|lower }}">
+                    <td style="font-weight: 600;">{{ machine.equipment_id }}</td>
+                    <td>
+                        <span style="padding: 4px 12px; background: linear-gradient(135deg, #ffd700, #ffb300); color: #1a1a1a; border-radius: 20px; font-weight: 600; font-size: 0.8rem;">
+                            {{ machine.type }}
+                        </span>
+                    </td>
                     <td>
                         {% if machine.qr_code %}
-                            <img src="{{ machine.qr_code.url }}" alt="QR Code" style="max-width: 100px; border: 1px solid #e0e0e0; padding: 5px;"><br>
+                            <img src="{{ machine.qr_code.url }}" alt="QR Code" style="max-width: 80px; border: 2px solid #ffd700; padding: 5px; border-radius: 6px; background: #ffffff;"><br>
                             <a href="{% url 'download_qr' machine.id %}" style="text-decoration: none; margin-top: 8px; display: inline-block;">
-                                <button class="btn btn-download">Download</button>
+                                <button class="btn btn-download" style="min-width: 90px; font-size: 0.8rem; padding: 6px 12px;">Download</button>
                             </a>
                         {% else %}
-                            <span style="color: #7f8c8d;">Not generated</span>
+                            <span style="color: #666; font-style: italic;">Not generated</span>
                         {% endif %}
                     </td>
                     <td>
                         <a href="{% url 'delete_machine' machine.id %}" style="text-decoration: none;">
-                            <button class="btn btn-delete">Delete</button>
+                            <button class="btn btn-delete" style="min-width: 80px; font-size: 0.8rem; padding: 6px 12px;">Delete</button>
                         </a>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4">No equipment added yet.</td>
+                    <td colspan="4" style="padding: 40px; color: #666;">No equipment added yet.</td>
                 </tr>
                 {% endfor %}
+                
+                <!-- No Results Row -->
+                <tr id="noResultsRow" style="display: none;">
+                    <td colspan="4" style="padding: 40px; color: #666; text-align: center;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                            <span>🔍 No equipment found matching your search criteria</span>
+                            <button onclick="clearSearch()" class="btn btn-secondary" style="min-width: 120px; font-size: 0.8rem; padding: 8px 16px;">Clear Search</button>
+                        </div>
+                    </td>
+                </tr>
             </table>
         </div>
         
         <!-- Navigation Section -->
-        <div style="text-align: center; margin-top: 30px;">
-            <a href="{% url 'rental_dashboard' %}" style="text-decoration: none;">
-                <button class="btn btn-download">Back to Dashboard</button>
+        <div class="navigation-section">
+            <a href="{% url 'rental_dashboard' %}" class="btn btn-secondary">
+                🏠 Back to Dashboard
             </a>
         </div>
     </div>
+
+    <script>
+        let totalEquipment = {{ machines|length }};
+        
+        function toggleView(viewType) {
+            const cardsView = document.getElementById('cards-view');
+            const tableView = document.getElementById('table-view');
+            const toggleButtons = document.querySelectorAll('.toggle-btn');
+            
+            // Remove active class from all buttons
+            toggleButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            if (viewType === 'cards') {
+                cardsView.style.display = 'grid';
+                tableView.style.display = 'none';
+            } else {
+                cardsView.style.display = 'none';
+                tableView.style.display = 'table';
+            }
+        }
+        
+        function searchEquipment() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('typeFilter').value.toLowerCase();
+            
+            // Search in card view
+            const equipmentCards = document.querySelectorAll('.equipment-card[data-equipment-id]');
+            let visibleCards = 0;
+            
+            equipmentCards.forEach(card => {
+                const equipmentId = card.getAttribute('data-equipment-id');
+                const equipmentType = card.getAttribute('data-equipment-type');
+                
+                const matchesSearch = equipmentId.includes(searchTerm) || equipmentType.includes(searchTerm);
+                const matchesType = !typeFilter || equipmentType === typeFilter;
+                
+                if (matchesSearch && matchesType) {
+                    card.style.display = 'block';
+                    visibleCards++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Search in table view
+            const tableRows = document.querySelectorAll('.table-row');
+            let visibleRows = 0;
+            
+            tableRows.forEach(row => {
+                const equipmentId = row.getAttribute('data-equipment-id');
+                const equipmentType = row.getAttribute('data-equipment-type');
+                
+                const matchesSearch = equipmentId.includes(searchTerm) || equipmentType.includes(searchTerm);
+                const matchesType = !typeFilter || equipmentType === typeFilter;
+                
+                if (matchesSearch && matchesType) {
+                    row.style.display = 'table-row';
+                    visibleRows++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Update counter and show/hide empty states
+            const resultCount = Math.max(visibleCards, visibleRows);
+            updateResultCounter(resultCount);
+            
+            // Show/hide no results states
+            const noResultsState = document.getElementById('noResultsState');
+            const noResultsRow = document.getElementById('noResultsRow');
+            
+            if (resultCount === 0 && totalEquipment > 0) {
+                if (noResultsState) noResultsState.style.display = 'block';
+                if (noResultsRow) noResultsRow.style.display = 'table-row';
+            } else {
+                if (noResultsState) noResultsState.style.display = 'none';
+                if (noResultsRow) noResultsRow.style.display = 'none';
+            }
+        }
+        
+        function filterByType() {
+            searchEquipment(); // Reuse search function for filtering
+        }
+        
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('typeFilter').value = '';
+            searchEquipment();
+        }
+        
+        function updateResultCounter(count) {
+            const resultCountElement = document.getElementById('resultCount');
+            if (resultCountElement) {
+                resultCountElement.textContent = count;
+            }
+        }
+        
+        // Add hover effects to table rows on load
+        window.addEventListener('load', function() {
+            const tableRows = document.querySelectorAll('.machines-table tr');
+            tableRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    if (!this.querySelector('th') && this.style.display !== 'none') {
+                        this.style.transform = 'translateX(5px)';
+                    }
+                });
+                row.addEventListener('mouseleave', function() {
+                    if (!this.querySelector('th')) {
+                        this.style.transform = 'translateX(0)';
+                    }
+                });
+            });
+            
+            // Focus on search input with keyboard shortcut
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    e.preventDefault();
+                    document.getElementById('searchInput').focus();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

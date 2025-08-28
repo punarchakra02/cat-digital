@@ -156,7 +156,7 @@ def qr_scan_info(request, equipment_id):
                 start_date=form.cleaned_data['checkout_date'],
                 expected_end_date=form.cleaned_data['expected_return_date'],
                 active=True,
-                status='Active'
+                status='Active',
             )
             machine.status = 'Rented'
             machine.save()
