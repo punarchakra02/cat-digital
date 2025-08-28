@@ -57,7 +57,6 @@ class Machine(models.Model):
     def generate_qr_code(self):
         # Generate a QR code with the equipment checkout URL
         checkout_url = f"http://127.0.0.1:8000/checkout/{self.equipment_id}/"
-
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,

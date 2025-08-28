@@ -1,0 +1,10 @@
+Django==4.2.1
+asgiref==3.6.0
+sqlparse==0.4.4
+pytz==2023.3
+tzdata==2025.2   # (only for Windows)
+psycopg2-binary==2.9.9  
+gunicorn==21.2.0
+dj-database-url==2.2.0
+qrcode==7.4.2
+Pillow==10.4.0 
