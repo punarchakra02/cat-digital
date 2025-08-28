@@ -8,5 +8,7 @@ urlpatterns = [
     path('download/<int:pk>/', views.download_qr, name="download_qr"),
     path('checkout/<str:equipment_id>/', views.qr_scan_info, name="checkout"),
     path('checkin/<int:rental_id>/', views.checkin_machine, name="checkin_machine"),
+    path('forecast/<str:equipment_type>/', views.generate_forecast, name="generate_forecast"),
+    path('forecast_image/<str:equipment_type>/', views.get_forecast_image, name="get_forecast_image"),
     path('', views.rental_dashboard, name="rental_dashboard"),
 ]

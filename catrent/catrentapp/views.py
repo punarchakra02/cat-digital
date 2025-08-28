@@ -1,14 +1,18 @@
+import json
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse, JsonResponse, FileResponse
 from django.contrib import messages
 from django.utils import timezone
 from django.urls import reverse
 from datetime import timedelta
-import json
+import os
+import pandas as pd
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 
 from .models import Machine, Rental, EquipmentHealth
 from .forms import MachineForm, CheckoutForm
+from .demand_forecasting import equipment_demand_forecast
 
 def add(request):
     """Add and list machines"""
@@ -56,15 +60,39 @@ def rental_dashboard(request):
         # Rented machines
         rented_qs = Rental.objects.filter(active=True, status='Active').select_related('machine')
         rented = []
+        
+        # Count for rented machines by type
+        rented_bulldozer_count = 0
+        rented_excavator_count = 0
+        rented_loader_count = 0
+        rented_crane_count = 0
+        
         for rental in rented_qs:
             latest_health = rental.machine.health_records.order_by('-timestamp').first()
             rented.append({
                 "rental": rental,
                 "health": latest_health,
             })
+            
+            # Count by machine type
+            machine_type = rental.machine.type
+            if machine_type == 'Bulldozer':
+                rented_bulldozer_count += 1
+            elif machine_type == 'Excavator':
+                rented_excavator_count += 1
+            elif machine_type == 'Loader':
+                rented_loader_count += 1
+            elif machine_type == 'Crane':
+                rented_crane_count += 1
 
         # Available machines
         available = Machine.objects.filter(status='Available')
+        
+        # Count machines by type
+        bulldozer_count = available.filter(type='Bulldozer').count()
+        excavator_count = available.filter(type='Excavator').count()
+        loader_count = available.filter(type='Loader').count()
+        crane_count = available.filter(type='Crane').count()
 
         # Latest health per machine (cross-db safe)
         latest_health_records = []
@@ -87,6 +115,14 @@ def rental_dashboard(request):
             "rented": rented,
             "available": available,
             "health_chart_data": json.dumps(health_chart_data),
+            "bulldozer_count": bulldozer_count,
+            "excavator_count": excavator_count,
+            "loader_count": loader_count,
+            "crane_count": crane_count,
+            "rented_bulldozer_count": rented_bulldozer_count,
+            "rented_excavator_count": rented_excavator_count,
+            "rented_loader_count": rented_loader_count,
+            "rented_crane_count": rented_crane_count,
         })
 
     except Exception as e:
@@ -94,7 +130,15 @@ def rental_dashboard(request):
         return render(request, "rental_dashboard.html", {
             "rented": [],
             "available": [],
-            "health_chart_data": json.dumps({"labels":[], "data":[]})
+            "health_chart_data": json.dumps({"labels": [], "data": []}),
+            "bulldozer_count": 0,
+            "excavator_count": 0,
+            "loader_count": 0,
+            "crane_count": 0,
+            "rented_bulldozer_count": 0,
+            "rented_excavator_count": 0,
+            "rented_loader_count": 0,
+            "rented_crane_count": 0,
         })
 
 
@@ -207,4 +251,95 @@ def checkin_machine(request, rental_id):
             "message": f"Machine {rental.machine.equipment_id} checked in successfully!"
         })
 
-    return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
+
+def generate_forecast(request, equipment_type):
+    """Generate demand forecast for a specific equipment type"""
+    try:
+        # Create forecast directory if it doesn't exist
+        forecast_dir = os.path.join(settings.BASE_DIR, 'forecast')
+        os.makedirs(forecast_dir, exist_ok=True)
+        
+        # Get data from the Rental model
+        rentals = Rental.objects.all().select_related('machine')
+        
+        # Convert to DataFrame
+        data = []
+        for rental in rentals:
+            data.append({
+                'equipment_id': rental.machine.equipment_id,
+                'equipment_type': rental.machine.type,
+                'checkout_date': rental.start_date,
+                'checkin_date': rental.expected_end_date,
+                'site_id': rental.site_id,
+                'rate_per_day': float(rental.rate_per_day),
+                'maintenance_count': rental.maintenance,
+                'engine_hours': rental.engine_hours,
+                'idle_hours': rental.idle_hours,
+                'year_week': rental.week,
+                'target_checkout_count': rental.target_checkout_count,
+                'checkout_count_t-1': rental.checkout_count_t_1,
+                'checkout_count_t-4': rental.checkout_count_t_4,
+                'rolling_mean_4w': rental.rolling_mean_4w,
+                'price_index': rental.price_index,
+                'pct_maint': rental.pct_maint,
+                'engine_hours_avg': rental.engine_hours_avg,
+                'idle_ratio_avg': rental.idle_ratio_avg,
+                'equipment_type_encoded': rental.equipment_type_encoded,
+                'usage_efficiency': rental.usage_efficiency,
+                'rental_duration': rental.rental_duration,
+                'rate_relative': rental.rate_relative,
+                'recent_maintenance': rental.recent_maintenance,
+                'maintenance_per_day': rental.maintenance_per_day,
+                'engine_hours_per_day': rental.engine_hours_per_day,
+                'month_sin': rental.month_sin,
+                'month_cos': rental.month_cos,
+                'week_sin': rental.week_sin,
+                'week_cos': rental.week_cos,
+                'rolling_std_4w': rental.rolling_std_4w,
+                'rolling_max_4w': rental.rolling_max_4w
+            })
+        
+        df = pd.DataFrame(data)
+        
+        # Only proceed if we have data
+        if len(df) == 0:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'No rental data available for forecasting'
+            })
+        
+        # Generate forecast
+        forecast_result = equipment_demand_forecast(df, output_folder=forecast_dir)
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': f'Forecast generated for {equipment_type}',
+            'image_url': f'/forecast_image/{equipment_type}/',
+        })
+        
+    except Exception as e:
+        import traceback
+        print(traceback.format_exc())
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Error generating forecast: {str(e)}'
+        }, status=500)
+
+
+def get_forecast_image(request, equipment_type):
+    """Return the forecast image for a specific equipment type"""
+    forecast_dir = os.path.join(settings.BASE_DIR, 'forecast')
+    image_path = os.path.join(forecast_dir, f"{equipment_type}_demand_forecast_2025.png")
+    
+    if os.path.exists(image_path):
+        return FileResponse(open(image_path, 'rb'), content_type='image/png')
+    else:
+        # If individual image doesn't exist, try the combined image
+        combined_path = os.path.join(forecast_dir, "equipment_demand_forecast_2025_combined.png")
+        if os.path.exists(combined_path):
+            return FileResponse(open(combined_path, 'rb'), content_type='image/png')
+        
+        # Return a 404 if no image is found
+        return HttpResponse("Forecast image not found", status=404)
+
+
