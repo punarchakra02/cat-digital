@@ -9,156 +9,326 @@
         * { box-sizing: border-box; }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
-            background-color: #f5f7fa;
-            color: #2c3e50;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            min-height: 100vh;
+            color: #1a1a1a;
+            line-height: 1.6;
         }
+        
         .container {
-            width: 100%;
-            margin: 0;
-            background-color: #ffffff;
-            padding: 30px;
-            border-bottom: 1px solid #e0e0e0;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.05);
+            min-height: 100vh;
         }
+        
         h1 {
-            color: #2c3e50;
+            color: #1a1a1a;
             text-align: center;
-            margin-bottom: 40px;
-            font-size: 2.2rem;
-            font-weight: 600;
-            letter-spacing: -0.5px;
+            margin-bottom: 50px;
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
         }
+        
         .equipment-info {
-            background-color: #ffffff;
-            padding: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .equipment-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ffb300, #1a1a1a);
+        }
+        
+        .checkout-form {
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            padding: 30px;
             margin-bottom: 30px;
-            border: 1px solid #e0e0e0;
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+            position: relative;
+            overflow: hidden;
         }
+        
+        .checkout-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ffb300, #1a1a1a);
+        }
+        
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
+        
         .form-row {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 10px;
         }
-        .form-row .form-group {
-            flex: 1;
-            min-width: 250px;
-        }
+        
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #2c3e50;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1a1a1a;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+        
         .form-control {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #e0e0e0;
-            font-size: 14px;
+            padding: 12px 16px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
             box-sizing: border-box;
-        }
-        .form-control:focus {
-            border-color: #3498db;
-            outline: none;
-        }
-        .form-control[readonly] {
-            background-color: #f8f9fa;
-            color: #7f8c8d;
-        }
-        .btn {
-            padding: 10px 18px; 
-            border: none; 
-            border-radius: 4px; 
-            cursor: pointer; 
-            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: #ffffff;
             font-weight: 500;
-            transition: all 0.2s ease;
-            margin-right: 10px;
         }
+        
+        .form-control:focus {
+            border-color: #ffd700;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+        
+        .form-control[readonly] {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #6c757d;
+            font-weight: 500;
+            border-color: #e9ecef;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 15px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 140px;
+        }
+        
         .btn-primary, .btn {
-            background: #3498db;
-            color: #fff; 
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #1a1a1a;
+            border: 2px solid transparent;
         }
+        
         .btn-primary:hover, .btn:hover {
-            background: #2980b9;
+            background: linear-gradient(135deg, #ffb300, #ff9800);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
         }
+        
         .btn-secondary {
-            background: #7f8c8d;
-            color: #fff; 
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            border: 2px solid transparent;
         }
+        
         .btn-secondary:hover {
-            background: #6c7a7a;
+            background: linear-gradient(135deg, #5a6268, #495057);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.3);
         }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #1a1a1a, #333333);
+            color: #ffd700;
+            border: 2px solid #ffd700;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #333333, #1a1a1a);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 26, 26, 0.3);
+        }
+        
         .button-group {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 40px;
+            padding: 20px;
+            background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+            border-radius: 12px;
+            border: 2px solid #f0f0f0;
         }
+        
         .messages {
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
+        
         .alert {
-            padding: 12px 16px;
-            margin-bottom: 15px;
-            border: 1px solid #e0e0e0;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 2px solid;
+            font-weight: 500;
         }
+        
         .alert-success {
-            background-color: #f2ffed;
-            border-left: 3px solid #2ecc71;
-            color: #27ae60;
+            background: linear-gradient(135deg, #f2ffed, #e8f7e8);
+            border-color: #20bf6b;
+            color: #166534;
         }
+        
         .alert-error {
-            background-color: #fff5f5;
-            border-left: 3px solid #e74c3c;
-            color: #c0392b;
+            background: linear-gradient(135deg, #fff5f5, #fef2f2);
+            border-color: #ff4757;
+            color: #991b1b;
         }
+        
         .required {
-            color: #e74c3c;
+            color: #ff4757;
             margin-left: 3px;
             font-weight: bold;
         }
         
         /* Section Titles */
         h3 {
-            font-size: 1.4rem;
-            color: #2c3e50; 
-            border-left: 3px solid #3498db; 
-            padding-left: 12px; 
-            margin-bottom: 20px; 
+            font-size: 1.6rem;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        h3::before {
+            content: '';
+            width: 6px;
+            height: 35px;
+            background: linear-gradient(135deg, #ffd700, #1a1a1a);
+            border-radius: 3px;
+        }
+        
+        /* Status Cards */
+        .status-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 30px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        }
+        
+        .status-card.rented {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, #fff9e6, #ffffff);
+        }
+        
+        .status-card.rented::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ffb300);
+        }
+        
+        .rental-info {
+            background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+            padding: 25px;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .status-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        .status-unavailable {
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #1a1a1a;
         }
         
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
-                padding: 15px;
+                padding: 20px;
             }
             
             h1 {
-                font-size: 1.8rem;
-                margin-bottom: 25px;
+                font-size: 2.2rem;
+                margin-bottom: 30px;
             }
             
             h3 {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
             }
             
             .form-row {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .form-row .form-group {
-                width: 100%;
-                min-width: auto;
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
             
             .btn {
-                padding: 8px 14px;
+                padding: 10px 20px;
                 font-size: 0.85rem;
+                min-width: 120px;
                 margin-bottom: 10px;
+            }
+            
+            .equipment-info, .checkout-form, .status-card {
+                padding: 20px;
             }
         }
         
@@ -166,32 +336,55 @@
             .btn {
                 width: 100%;
                 margin-right: 0;
-                margin-bottom: 10px;
+                margin-bottom: 12px;
             }
+            
+            .button-group {
+                padding: 15px;
+            }
+            
+            .form-control {
+                padding: 10px 14px;
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .equipment-info, .checkout-form, .status-card {
+            animation: fadeInUp 0.6s ease-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Equipment Checkout</h1>
+        <h1>🚛 Equipment Checkout</h1>
         
         <!-- Display messages -->
        
 
         <!-- Equipment Information (readonly) -->
         <div class="equipment-info">
-            <h3>Equipment Information</h3>
+            <h3>📋 Equipment Information</h3>
             <div class="form-row">
                 <div class="form-group">
                     <label>Equipment ID</label>
                     <input type="text" class="form-control" value="{{ machine.equipment_id }}" readonly>
                 </div>
                 <div class="form-group">
-                    <label>Type</label>
+                    <label>Equipment Type</label>
                     <input type="text" class="form-control" value="{{ machine.type }}" readonly>
                 </div>
                 <div class="form-group">
-                    <label>Status</label>
+                    <label>Current Status</label>
                     <input type="text" class="form-control" value="{{ machine.status }}" readonly>
                 </div>
             </div>
@@ -199,14 +392,17 @@
 
         {% if is_already_rented %}
             <!-- Equipment is already rented - show rental information -->
-            <div style="background-color: #f9f9f9; border: 1px solid #e0e0e0; padding: 20px; margin: 20px 0; border-left: 3px solid #f39c12;">
-                <h3 style="margin-top: 0;">Equipment Already Rented</h3>
-                <p style="font-size: 16px; margin-bottom: 20px; color: #2c3e50;">
+            <div class="status-card rented">
+                <div class="status-badge status-unavailable">
+                    ⚠️ Currently Unavailable
+                </div>
+                <h3 style="margin-top: 0;">🔒 Equipment Already Rented</h3>
+                <p style="font-size: 1.1rem; margin-bottom: 25px; color: #1a1a1a; font-weight: 500;">
                     This equipment is currently checked out and not available for rental.
                 </p>
                 
-                <div style="background-color: white; padding: 20px; border: 1px solid #e0e0e0; margin: 15px 0;">
-                    <h4 style="margin-top: 0; font-size: 1.2rem; color: #2c3e50; margin-bottom: 15px;">Current Rental Information:</h4>
+                <div class="rental-info">
+                    <h4 style="margin-top: 0; font-size: 1.2rem; color: #1a1a1a; margin-bottom: 20px;">📊 Current Rental Information:</h4>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Rental ID</label>
@@ -241,61 +437,63 @@
             </div>
 
             <div class="button-group">
-                <a href="{% url 'rental_dashboard' %}" class="btn">View Dashboard</a>
-                <a href="{% url 'add' %}" class="btn btn-secondary">Back</a>
+                <a href="{% url 'rental_dashboard' %}" class="btn">🏠 View Dashboard</a>
+                <a href="{% url 'add' %}" class="btn btn-secondary">⬅️ Back</a>
             </div>
 
         {% else %}
             <!-- Equipment is available - show checkout form -->
-        <form method="POST">
-            {% csrf_token %}
-            
-            <!-- Hidden fields for equipment data -->
-            {{ form.equipment_id.as_hidden }}
-            {{ form.type.as_hidden }}
-            {{ form.status.as_hidden }}
+            <div class="checkout-form">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <!-- Hidden fields for equipment data -->
+                    {{ form.equipment_id.as_hidden }}
+                    {{ form.type.as_hidden }}
+                    {{ form.status.as_hidden }}
 
-            <h3>Operator Information</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="id_operator_id">Operator ID <span class="required">*</span></label>
-                    {{ form.operator_id }}
-                </div>
-                <div class="form-group">
-                    <label for="id_operator_name">Operator Name <span class="required">*</span></label>
-                    {{ form.operator_name }}
-                </div>
-            </div>
+                    <h3>👤 Operator Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_operator_id">Operator ID <span class="required">*</span></label>
+                            {{ form.operator_id }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_operator_name">Operator Name <span class="required">*</span></label>
+                            {{ form.operator_name }}
+                        </div>
+                    </div>
 
-            <h3>Site Information</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="id_site_id">Site ID <span class="required">*</span></label>
-                    {{ form.site_id }}
-                </div>
-                <div class="form-group">
-                    <label for="id_site_name">Site Name</label>
-                    {{ form.site_name }}
-                </div>
-            </div>
+                    <h3>🏗️ Site Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_site_id">Site ID <span class="required">*</span></label>
+                            {{ form.site_id }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_site_name">Site Name</label>
+                            {{ form.site_name }}
+                        </div>
+                    </div>
 
-            <h3>Checkout Details</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="id_checkout_date">Checkout Date & Time <span class="required">*</span></label>
-                    {{ form.checkout_date }}
-                </div>
-                <div class="form-group">
-                    <label for="id_expected_return_date">Expected Return Date & Time <span class="required">*</span></label>
-                    {{ form.expected_return_date }}
-                </div>
-            </div>
+                    <h3>📅 Checkout Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_checkout_date">Checkout Date & Time <span class="required">*</span></label>
+                            {{ form.checkout_date }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_expected_return_date">Expected Return Date & Time <span class="required">*</span></label>
+                            {{ form.expected_return_date }}
+                        </div>
+                    </div>
 
-            <div class="button-group">
-                <button type="submit" class="btn">Approve Checkout</button>
-                <a href="{% url 'add' %}" class="btn btn-secondary">Cancel</a>
+                    <div class="button-group">
+                        <button type="submit" class="btn">✅ Approve Checkout</button>
+                        <a href="{% url 'add' %}" class="btn btn-secondary">❌ Cancel</a>
+                    </div>
+                </form>
             </div>
-        </form>
         {% endif %}
     </div>
 
@@ -315,6 +513,26 @@
                 const minutes = String(returnDate.getMinutes()).padStart(2, '0');
                 
                 document.getElementById('id_expected_return_date').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+        });
+        
+        // Add loading states to forms
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '⏳ Processing...';
+                        submitBtn.disabled = true;
+                    }
+                });
+            }
+            
+            // Auto-focus on first input
+            const firstInput = document.querySelector('input:not([readonly]):not([type="hidden"])');
+            if (firstInput) {
+                firstInput.focus();
             }
         });
     </script>
