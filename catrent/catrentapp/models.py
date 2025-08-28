@@ -29,13 +29,14 @@ class Machine(models.Model):
     type = models.CharField(max_length=100, choices=EQUIPMENT_TYPES)
     status = models.CharField(max_length=50, choices=EQUIPMENT_STATUS, default='Available')
     qr_code = models.ImageField(upload_to="qr_codes", blank=True, null=True)
+    rate_per_day = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, help_text="Rental rate per day")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ['equipment_id']
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.equipment_id} - {self.type}"
 
     @property
@@ -100,7 +101,7 @@ class Rental(models.Model):
     class Meta:
         ordering = ['-start_date']
 
-    def __str__(self):
+    def _str_(self):
         return f"Rental {self.rental_id} - {self.machine.equipment_id}"
 
     def save(self, *args, **kwargs):
@@ -144,7 +145,7 @@ class EquipmentUsage(models.Model):
         ordering = ['-date']
         unique_together = ('machine', 'date')
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.machine.equipment_id} usage on {self.date}"
 
 
@@ -194,5 +195,5 @@ class EquipmentHealth(models.Model):
         verbose_name_plural = 'Equipment Health Records'
         ordering = ['-timestamp']
 
-    def __str__(self):
+    def _str_(self):
         return f"{self.machine.equipment_id} - {self.component} ({self.status})"
