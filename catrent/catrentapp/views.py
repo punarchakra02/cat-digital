@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.urls import reverse
 from datetime import timedelta
 import json
+import os
+from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import Machine, Rental, EquipmentHealth
@@ -208,3 +210,36 @@ def checkin_machine(request, rental_id):
         })
 
     return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)
+
+
+def anomaly_dashboard(request):
+    """Display the anomaly monitoring dashboard"""
+    return render(request, "anomaly_dashboard.html")
+
+
+def anomaly_data(request):
+    """API endpoint to serve anomaly data as JSON"""
+    try:
+        # Path to the detailed anomaly report
+        anomaly_file_path = os.path.join(settings.BASE_DIR, 'detailed_anomaly_report.json')
+        
+        # Check if file exists
+        if not os.path.exists(anomaly_file_path):
+            return JsonResponse({"error": "Anomaly data file not found"}, status=404)
+        
+        # Read and parse the JSON file
+        with open(anomaly_file_path, 'r') as file:
+            anomaly_data = json.load(file)
+        
+        # Limit to first 100 anomalies for performance
+        # You can adjust this number or add pagination
+        limited_data = anomaly_data[:100] if len(anomaly_data) > 100 else anomaly_data
+        
+        return JsonResponse(limited_data, safe=False)
+        
+    except FileNotFoundError:
+        return JsonResponse({"error": "Anomaly data file not found"}, status=404)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON format in anomaly data file"}, status=500)
+    except Exception as e:
+        return JsonResponse({"error": f"Error loading anomaly data: {str(e)}"}, status=500)

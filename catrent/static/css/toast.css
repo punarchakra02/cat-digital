@@ -1,0 +1,299 @@
+/* Enhanced Toast Notification Styles */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 420px;
+}
+
+.toast {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    margin-bottom: 15px;
+    padding: 20px;
+    transform: translateX(450px);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    opacity: 0;
+    border-left: 5px solid;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast.removing {
+    transform: translateX(450px);
+    opacity: 0;
+}
+
+.toast.severity-high {
+    border-left-color: #dc3545;
+    background: linear-gradient(135deg, #fff 0%, #ffebee 60%, #ffcdd2 100%);
+    box-shadow: 0 8px 32px rgba(220, 53, 69, 0.3);
+}
+
+.toast.severity-medium {
+    border-left-color: #ff9800;
+    background: linear-gradient(135deg, #fff 0%, #fff8e1 60%, #ffecb3 100%);
+    box-shadow: 0 8px 32px rgba(255, 152, 0, 0.3);
+}
+
+.toast.severity-low {
+    border-left-color: #2196f3;
+    background: linear-gradient(135deg, #fff 0%, #e3f2fd 60%, #bbdefb 100%);
+    box-shadow: 0 8px 32px rgba(33, 150, 243, 0.3);
+}
+
+.toast-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.toast-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.3;
+    flex: 1;
+}
+
+.toast-time {
+    font-size: 11px;
+    color: #666;
+    font-weight: 500;
+    text-align: right;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-left: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.toast-close {
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #666;
+    padding: 4px 8px;
+    margin-left: 8px;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.toast-close:hover {
+    background: rgba(0, 0, 0, 0.2);
+    color: #333;
+    transform: scale(1.1);
+}
+
+.toast-body {
+    font-size: 13px;
+    color: #444;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+.toast-body strong {
+    color: #222;
+    font-weight: 600;
+}
+
+.anomaly-details {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    font-size: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.feature-deviation {
+    display: inline-block;
+    margin: 3px 4px;
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-family: 'Segoe UI', monospace;
+    font-weight: 600;
+    font-size: 11px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.severity-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: pulse-indicator 2s infinite;
+}
+
+.severity-high .severity-indicator {
+    background: radial-gradient(circle, #dc3545 0%, #c82333 100%);
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.6);
+}
+
+.severity-medium .severity-indicator {
+    background: radial-gradient(circle, #ff9800 0%, #f57c00 100%);
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.6);
+}
+
+.severity-low .severity-indicator {
+    background: radial-gradient(circle, #2196f3 0%, #1976d2 100%);
+    box-shadow: 0 0 10px rgba(33, 150, 243, 0.6);
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    transition: width linear;
+    border-radius: 0 0 12px 0;
+}
+
+.severity-high .toast-progress {
+    background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
+}
+
+.severity-medium .toast-progress {
+    background: linear-gradient(90deg, #ff9800 0%, #f57c00 100%);
+    box-shadow: 0 0 8px rgba(255, 152, 0, 0.5);
+}
+
+.severity-low .toast-progress {
+    background: linear-gradient(90deg, #2196f3 0%, #1976d2 100%);
+    box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
+}
+
+/* Enhanced animations */
+.toast.severity-high {
+    animation: pulse-severe 3s infinite;
+}
+
+@keyframes pulse-severe {
+    0% { 
+        box-shadow: 0 8px 32px rgba(220, 53, 69, 0.3);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 12px 40px rgba(220, 53, 69, 0.5);
+        transform: scale(1.02);
+    }
+    100% { 
+        box-shadow: 0 8px 32px rgba(220, 53, 69, 0.3);
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse-indicator {
+    0% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
+    100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Hover effects */
+.toast:hover {
+    transform: translateX(-5px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.toast:hover .toast-progress {
+    animation-play-state: paused;
+}
+
+/* Equipment ID styling */
+.toast-body {
+    line-height: 1.6;
+}
+
+.toast-body br {
+    margin-bottom: 6px;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .toast {
+        transform: translateY(-150px);
+        padding: 16px;
+    }
+    
+    .toast.show {
+        transform: translateY(0);
+    }
+    
+    .toast.removing {
+        transform: translateY(-150px);
+    }
+    
+    .toast-title {
+        font-size: 14px;
+    }
+    
+    .toast-body {
+        font-size: 12px;
+    }
+    
+    .feature-deviation {
+        margin: 2px 2px;
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+}
+
+/* Loading state */
+.toast.loading {
+    opacity: 0.7;
+}
+
+.toast.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
