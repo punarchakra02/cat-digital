@@ -1,17 +1,18 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, JsonResponse
-from .forms import MachineForm, RentalForm, CheckoutForm
-from django.utils import timezone
-from datetime import timedelta
-from .models import Machine, Rental, EquipmentUsage, EquipmentHealth
+from django.http import HttpResponse,JsonResponse
 from django.contrib import messages
+from django.utils import timezone
+from django.urls import reverse
+from datetime import timedelta
+import json
 from django.views.decorators.csrf import csrf_exempt
 
+from .models import Machine, Rental, EquipmentHealth
+from .forms import MachineForm, CheckoutForm
 
 def add(request):
     """Add and list machines"""
     machines = Machine.objects.all()
-
     if request.method == "POST":
         form = MachineForm(request.POST)
         if form.is_valid():
@@ -20,10 +21,9 @@ def add(request):
                 messages.success(request, 'Machine added successfully!')
                 return redirect("add")
             except Exception as e:
-                messages.error(request, f'Error adding machine: {str(e)}')
+                messages.error(request, 'Error adding machine.')
     else:
         form = MachineForm()
-
     return render(request, "add_machine.html", {"machines": machines, "form": form})
 
 
@@ -34,16 +34,15 @@ def delete_machine(request, pk):
         machine.delete()
         messages.success(request, 'Machine deleted successfully!')
     except Exception as e:
-        messages.error(request, f'Error deleting machine: {str(e)}')
+        messages.error(request, 'Error deleting machine.')
     return redirect("add")
 
 
 def download_qr(request, pk):
-    """Download the QR code image for a machine"""
+    """Download QR code image"""
     machine = get_object_or_404(Machine, pk=pk)
     if not machine.qr_code:
         return HttpResponse("No QR code available for this equipment.")
-
     file_path = machine.qr_code.path
     with open(file_path, "rb") as f:
         response = HttpResponse(f.read(), content_type="image/png")
@@ -51,53 +50,10 @@ def download_qr(request, pk):
         return response
 
 
-
-def rent_machine(request, machine_id):
-    """Admin scans QR and rents a machine"""
-    try:
-        machine = get_object_or_404(Machine, equipment_id=machine_id)
-
-        # Check if machine is already rented
-        if machine.status == 'Rented':
-            messages.error(request, 'This machine is already rented!')
-            return redirect("rental_dashboard")
-
-        if request.method == "POST":
-            operator_id = request.POST.get("operator_id")
-            operator_name = request.POST.get("operator_name", "Unknown")
-            site_id = request.POST.get("site_id")
-            site_name = request.POST.get("site_name", "")
-            days = int(request.POST.get("days", 1))
-            expected_end_date = timezone.now() + timedelta(days=days)
-
-            rental = Rental.objects.create(
-                machine=machine,
-                operator_id=operator_id,
-                operator_name=operator_name,
-                site_id=site_id,
-                site_name=site_name,
-                expected_end_date=expected_end_date,
-                active=True,
-                status='Active'
-            )
-            # Update machine status
-            machine.status = 'Rented'
-            machine.save()
-
-            messages.success(request, f'Machine {machine.equipment_id} rented successfully!')
-            return redirect("rental_dashboard")
-
-        return render(request, "rent_machine.html", {"machine": machine})
-        
-    except Exception as e:
-        messages.error(request, f'Error renting machine: {str(e)}')
-        return redirect("rental_dashboard")
-
-
 def rental_dashboard(request):
-    """Modern dashboard with sections and health chart data."""
+    """Dashboard showing rented, available machines and health chart"""
     try:
-        # Rented machines (active rentals)
+        # Rented machines
         rented_qs = Rental.objects.filter(active=True, status='Active').select_related('machine')
         rented = []
         for rental in rented_qs:
@@ -107,14 +63,19 @@ def rental_dashboard(request):
                 "health": latest_health,
             })
 
-        # Available machines (not currently rented)
+        # Available machines
         available = Machine.objects.filter(status='Available')
 
+        # Latest health per machine (cross-db safe)
+        latest_health_records = []
+        for machine in Machine.objects.all():
+            latest = machine.health_records.order_by('-timestamp').first()
+            if latest:
+                latest_health_records.append(latest)
+
         # Health chart data
-        health_counts = {
-            'Good': 0, 'Warning': 0, 'Critical': 0, 'Maintenance Required': 0
-        }
-        for h in EquipmentHealth.objects.order_by('-timestamp').distinct('machine'):
+        health_counts = {'Good':0, 'Warning':0, 'Critical':0, 'Maintenance Required':0}
+        for h in latest_health_records:
             if h.status in health_counts:
                 health_counts[h.status] += 1
         health_chart_data = {
@@ -125,92 +86,125 @@ def rental_dashboard(request):
         return render(request, "rental_dashboard.html", {
             "rented": rented,
             "available": available,
-            "health_chart_data": health_chart_data,
+            "health_chart_data": json.dumps(health_chart_data),
         })
+
     except Exception as e:
-        messages.error(request, f'Error loading dashboard: {str(e)}')
+        messages.error(request, 'Error loading dashboard.')
         return render(request, "rental_dashboard.html", {
-            "rented": [], "available": [], "health_chart_data": {"labels":[], "data":[]}
+            "rented": [],
+            "available": [],
+            "health_chart_data": json.dumps({"labels":[], "data":[]})
         })
+
+
+def rent_machine(request, machine_id):
+    """Rent a machine manually"""
+    machine = get_object_or_404(Machine, equipment_id=machine_id)
+    if machine.status == 'Rented':
+        messages.error(request, 'Machine already rented!')
+        return redirect("rental_dashboard")
+
+    if request.method == "POST":
+        operator_id = request.POST.get("operator_id")
+        operator_name = request.POST.get("operator_name", "Unknown")
+        site_id = request.POST.get("site_id")
+        site_name = request.POST.get("site_name", "")
+        days = int(request.POST.get("days", 1))
+        expected_end_date = timezone.now() + timedelta(days=days)
+
+        rental = Rental.objects.create(
+            machine=machine,
+            operator_id=operator_id,
+            operator_name=operator_name,
+            site_id=site_id,
+            site_name=site_name,
+            expected_end_date=expected_end_date,
+            active=True,
+            status='Active'
+        )
+
+        machine.status = 'Rented'
+        machine.save()
+
+        messages.success(request, f'Machine {machine.equipment_id} rented successfully!')
+        return redirect("rental_dashboard")
+
+    return render(request, "rent_machine.html", {"machine": machine})
 
 
 def qr_scan_info(request, equipment_id):
-    """QR scan checkout view for admins"""
-    try:
-        machine = get_object_or_404(Machine, equipment_id=equipment_id)
-        
-        # Check if equipment is already rented
-        current_rental = machine.current_rental
-        if current_rental:
-            # Equipment is already rented - show rental info instead of checkout form
-            context = {
-                'machine': machine,
-                'current_rental': current_rental,
-                'is_already_rented': True,
-            }
-            return render(request, 'checkout.html', context)
-        
-        # Equipment is available for checkout
-        if request.method == "POST":
-            form = CheckoutForm(request.POST)
-            if form.is_valid():
-                # Double check that machine is still available
-                if machine.current_rental:
-                    messages.error(request, f'Equipment {machine.equipment_id} was just rented by someone else!')
-                    return redirect('checkout', equipment_id=equipment_id)
-                
-                # Create rental record
-                rental = Rental.objects.create(
-                    machine=machine,
-                    operator_id=form.cleaned_data['operator_id'],
-                    operator_name=form.cleaned_data['operator_name'],
-                    site_id=form.cleaned_data['site_id'],
-                    site_name=form.cleaned_data['site_name'],
-                    start_date=form.cleaned_data['checkout_date'],
-                    expected_end_date=form.cleaned_data['expected_return_date'],
-                    active=True
-                )
-                
-                # Update machine status
-                machine.status = 'Rented'
-                machine.save()
-                
-                messages.success(request, f'Equipment {machine.equipment_id} successfully checked out!')
-                return redirect('rental_dashboard')
-        else:
-            # Pre-fill form with machine data and current time
-            initial_data = {
-                'equipment_id': machine.equipment_id,
-                'type': machine.type,
-                'status': machine.status,
-                'checkout_date': timezone.now().strftime('%Y-%m-%dT%H:%M'),
-            }
-            form = CheckoutForm(initial=initial_data)
-        
-        context = {
+    """QR scan checkout for admins"""
+    machine = get_object_or_404(Machine, equipment_id=equipment_id)
+    current_rental = machine.current_rental
+    if current_rental:
+        return render(request, 'checkout.html', {
             'machine': machine,
-            'form': form,
-            'is_already_rented': False,
-        }
-        
-        return render(request, 'checkout.html', context)
-        
-    except Exception as e:
-        messages.error(request, f'Error processing checkout: {str(e)}')
-        return redirect('add')
+            'current_rental': current_rental,
+            'is_already_rented': True,
+        })
 
-
-# Check-in view
-@csrf_exempt
-def checkin_machine(request, rental_id):
-    """Check in a rented machine."""
-    rental = get_object_or_404(Rental, id=rental_id)
     if request.method == "POST":
+        form = CheckoutForm(request.POST)
+        if form.is_valid():
+            rental = Rental.objects.create(
+                machine=machine,
+                operator_id=form.cleaned_data['operator_id'],
+                operator_name=form.cleaned_data['operator_name'],
+                site_id=form.cleaned_data['site_id'],
+                site_name=form.cleaned_data['site_name'],
+                start_date=form.cleaned_data['checkout_date'],
+                expected_end_date=form.cleaned_data['expected_return_date'],
+                active=True,
+                status='Active'
+            )
+            machine.status = 'Rented'
+            machine.save()
+            messages.success(request, f'Equipment {machine.equipment_id} checked out!')
+            return redirect('rental_dashboard')
+    else:
+        initial_data = {
+            'equipment_id': machine.equipment_id,
+            'type': machine.type,
+            'status': machine.status,
+            'checkout_date': timezone.now().strftime('%Y-%m-%dT%H:%M'),
+        }
+        form = CheckoutForm(initial=initial_data)
+
+    return render(request, 'checkout.html', {
+        'machine': machine,
+        'form': form,
+        'is_already_rented': False,
+    })
+
+
+@csrf_exempt  # We'll handle CSRF in JS fetch headers
+def checkin_machine(request, rental_id):
+    """
+    Check-in a rented machine after QR validation.
+    Expects POST with optional equipment_id for double validation.
+    """
+    rental = get_object_or_404(Rental, id=rental_id)
+
+    if request.method == "POST":
+        # Get equipment ID from POST for validation
+        equipment_id = request.POST.get("equipment_id", None)
+        if equipment_id and equipment_id != rental.machine.equipment_id:
+            return JsonResponse({
+                "status": "error",
+                "message": "Equipment ID does not match. Check-in failed!"
+            }, status=400)
+
         rental.active = False
         rental.status = 'Completed'
         rental.actual_end_date = timezone.now()
         rental.machine.status = 'Available'
         rental.machine.save()
         rental.save()
-        messages.success(request, f"Machine {rental.machine.equipment_id} checked in successfully!")
-    return redirect('rental_dashboard')
+
+        return JsonResponse({
+            "status": "success",
+            "message": f"Machine {rental.machine.equipment_id} checked in successfully!"
+        })
+
+    return JsonResponse({"status": "error", "message": "Invalid request."}, status=400)

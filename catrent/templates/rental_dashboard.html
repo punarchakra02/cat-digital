@@ -26,6 +26,12 @@
         .card { background: #f8f9fa; border-radius: 8px; box-shadow: 0 1px 4px #0001; padding: 20px; flex: 1; min-width: 300px; }
         #qr-reader { width: 350px; margin: 0 auto; }
         .chart-container { width: 100%; max-width: 600px; margin: 0 auto; }
+
+        /* QR Modal */
+        #checkin-qr-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+            background:rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center; }
+        #checkin-qr-modal .modal-box { background:#fff; padding:20px; border-radius:10px; 
+            max-width:400px; width:100%; text-align:center; }
     </style>
 </head>
 <body>
@@ -55,37 +61,56 @@
             </tr>
             {% for item in rented %}
             <tr>
-                <td>{{ item.rental.machine.equipment_id }}</td>
-                <td>{{ item.rental.operator_name }}<br><small>ID: {{ item.rental.operator_id }}</small></td>
-                <td>{{ item.rental.start_date|date:"M d, Y H:i" }}<br>→<br>{{ item.rental.expected_end_date|date:"M d, Y H:i" }}</td>
+                <td>{{ item.rental.machine.equipment_id|default:"N/A" }}</td>
+                <td>
+                    {{ item.rental.operator_name|default:"Unknown" }}<br>
+                    <small>ID: {{ item.rental.operator_id|default:"-" }}</small>
+                </td>
+                <td>
+                    {{ item.rental.start_date|date:"M d, Y H:i" }}<br>→<br>
+                    {{ item.rental.expected_end_date|date:"M d, Y H:i" }}
+                </td>
                 <td>{{ item.rental.site_name|default:item.rental.site_id }}</td>
                 <td>
                     {% if item.health %}
-                        <span style="color:{{ item.health.status|yesno:'#28a745,#dc3545' }};">
-                            {{ item.health.status }}
-                        </span>
+                        {% if item.health.status == "Good" %}
+                            <span style="color:#28a745;">{{ item.health.status }}</span>
+                        {% elif item.health.status == "Warning" %}
+                            <span style="color:#ffc107;">{{ item.health.status }}</span>
+                        {% elif item.health.status == "Critical" %}
+                            <span style="color:#fd7e14;">{{ item.health.status }}</span>
+                        {% elif item.health.status == "Maintenance Required" %}
+                            <span style="color:#dc3545;">{{ item.health.status }}</span>
+                        {% else %}
+                            <span style="color:#6c757d;">{{ item.health.status }}</span>
+                        {% endif %}
                     {% else %}
                         <span style="color:#6c757d;">No Data</span>
                     {% endif %}
                 </td>
                 <td>
-                    <form method="post" action="{% url 'checkin_machine' item.rental.id %}">
-                        {% csrf_token %}
-                        <button class="btn btn-success" type="submit">Check In</button>
-                    </form>
+                    <button class="btn btn-success" type="button" 
+                        onclick="startCheckin('{{ item.rental.id }}', '{{ item.rental.machine.equipment_id }}')">
+                        Check In
+                    </button>
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="6">No active rentals</td></tr>
+            <tr>
+                <td colspan="6">No active rentals</td>
+            </tr>
             {% endfor %}
         </table>
     </div>
 
-    <!-- Real-Time Health Section -->
+    <!-- Real-Time Health Chart -->
     <div class="section">
         <div class="section-title">Real-Time Equipment Health Overview</div>
         <div class="chart-container">
             <canvas id="healthChart"></canvas>
+            <script id="health-chart-data" type="application/json">
+                {{ health_chart_data|safe }}
+            </script>
         </div>
     </div>
 
@@ -105,13 +130,22 @@
                 <td>{{ machine.type }}</td>
                 <td><span style="color:#28a745;">Available</span></td>
                 <td>
-                    <a href="{% url 'rent_machine' machine.equipment_id %}" class="btn btn-primary">Rent</a>
+                    <a href="{% url 'checkout' machine.equipment_id %}" class="btn btn-primary">Rent</a>
                 </td>
             </tr>
             {% empty %}
             <tr><td colspan="4">No available machines</td></tr>
             {% endfor %}
         </table>
+    </div>
+</div>
+
+<!-- Check-in QR Modal -->
+<div id="checkin-qr-modal">
+    <div class="modal-box">
+        <h3>Scan QR Code to Check In</h3>
+        <div id="checkin-qr-reader" style="width:300px; margin:10px auto;"></div>
+        <button class="btn btn-danger" onclick="closeCheckinQr()">Cancel</button>
     </div>
 </div>
 
@@ -124,19 +158,15 @@ function showQrScanner() {
         qrReader.start(
             { facingMode: "environment" },
             { fps: 10, qrbox: 250 },
-            qrCodeMessage => {
-                // Redirect to the scanned URL (should be your checkout URL)
-                window.location.href = qrCodeMessage;
-            },
+            qrCodeMessage => { window.location.href = qrCodeMessage; },
             errorMessage => {}
         );
     }
 }
 
-// Chart.js for health status
 window.onload = function() {
+    const healthData = JSON.parse(document.getElementById('health-chart-data').textContent);
     const ctx = document.getElementById('healthChart').getContext('2d');
-    const healthData = {{ health_chart_data|safe }};
     new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -147,12 +177,90 @@ window.onload = function() {
             }]
         },
         options: {
+            responsive: true,
             plugins: {
                 legend: { position: 'bottom' }
             }
         }
     });
 };
+
+// ---------------- Check-in QR Scanner ----------------
+let checkinQrScanner;
+
+function startCheckin(rentalId, expectedEquipmentId) {
+    document.getElementById('checkin-qr-modal').style.display = 'flex';
+
+    if (!checkinQrScanner) {
+        checkinQrScanner = new Html5Qrcode("checkin-qr-reader");
+    }
+
+    checkinQrScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (qrMessage) => {
+            try {
+                const urlParts = qrMessage.split("/");
+                const scannedEquipmentId = urlParts[urlParts.length - 2]; // "EQX1001"
+
+                // Stop scanning in all cases
+                checkinQrScanner.stop();
+
+                if (scannedEquipmentId === expectedEquipmentId) {
+                    // Post to backend for checkin
+                    fetch(`/checkin/${rentalId}/`, {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": getCookie("csrftoken"),
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: `equipment_id=${scannedEquipmentId}`
+                    })
+                    .then(res => res.json())
+                    .finally(() => {
+                        // Reload page after success/failure
+                        window.location.reload();
+                    });
+                } else {
+                    // Reload page even on mismatch
+                    window.location.reload();
+                }
+
+                closeCheckinQr();
+
+            } catch (e) {
+                // Reload page on error
+                checkinQrScanner.stop();
+                closeCheckinQr();
+                window.location.reload();
+            }
+        },
+        (err) => {}
+    );
+}
+
+function closeCheckinQr() {
+    document.getElementById('checkin-qr-modal').style.display = 'none';
+    if (checkinQrScanner) {
+        checkinQrScanner.stop();
+    }
+}
+
+// Helper: Get CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 </script>
 </body>
 </html>
