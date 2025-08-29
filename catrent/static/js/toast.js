@@ -1,9 +1,11 @@
-// Toast Notification System - Simplified Random Display
+// Toast Notification System - Enhanced with Real-time Dashboard Updates
 class ToastManager {
     constructor() {
         this.container = this.createContainer();
         this.anomalies = [];
         this.interval = null;
+        this.displayedAnomalies = { high: 0, medium: 0, low: 0 };
+        this.totalDisplayed = 0;
     }
 
     createContainer() {
@@ -15,14 +17,39 @@ class ToastManager {
 
     async loadAnomalies() {
         try {
+            console.log('Fetching anomaly data from detailed_anomaly_report.json...');
             const response = await fetch('/anomaly-data/');
             this.anomalies = await response.json();
-            console.log(`Loaded ${this.anomalies.length} anomalies from JSON file`);
+            console.log(`✅ Successfully loaded ${this.anomalies.length} vehicle anomalies from JSON file`);
+            console.log('Sample anomaly data:', this.anomalies[0]);
+            
+            // Initialize dashboard statistics
+            this.updateDashboardStats();
             return true;
         } catch (error) {
-            console.error('Error loading anomalies:', error);
-            this.showErrorToast('Failed to load anomaly data from JSON file');
+            console.error('❌ Error loading vehicle anomaly data:', error);
+            this.showErrorToast('Failed to load vehicle anomaly data from detailed_anomaly_report.json');
             return false;
+        }
+    }
+
+    updateDashboardStats() {
+        // Calculate overall statistics for the chart and initial display
+        const stats = { high: 0, medium: 0, low: 0, total: this.anomalies.length };
+        
+        this.anomalies.forEach(anomaly => {
+            const severity = anomaly.severity.toLowerCase();
+            if (severity === 'high') stats.high++;
+            else if (severity === 'medium') stats.medium++;
+            else if (severity === 'low') stats.low++;
+        });
+
+        // Update dashboard elements if they exist
+        if (window.updateStatsDisplay) {
+            window.updateStatsDisplay(stats);
+        }
+        if (window.updateChart) {
+            window.updateChart(stats);
         }
     }
 
@@ -35,6 +62,11 @@ class ToastManager {
             this.showErrorToast('No anomaly data available');
             return;
         }
+
+        // Reset displayed counters
+        this.displayedAnomalies = { high: 0, medium: 0, low: 0 };
+        this.totalDisplayed = 0;
+        this.updateLiveCounters();
 
         // Show first random toast immediately
         this.showRandomAnomaly();
@@ -60,9 +92,68 @@ class ToastManager {
         // Pick a random anomaly from the JSON data
         const randomIndex = Math.floor(Math.random() * this.anomalies.length);
         const anomaly = this.anomalies[randomIndex];
+        const vehicleId = this.extractEquipmentId(anomaly);
         
-        console.log(`Showing random anomaly #${randomIndex}:`, anomaly);
+        console.log(`🚨 Displaying anomaly for Vehicle ID: ${vehicleId} (Index: ${randomIndex}, Severity: ${anomaly.severity})`);
+        
+        // Update counters BEFORE showing the toast
+        this.incrementDisplayedCounter(anomaly.severity);
+        
         this.showAnomalyToast(anomaly);
+    }
+
+    incrementDisplayedCounter(severity) {
+        const severityLower = severity.toLowerCase();
+        if (severityLower === 'high') this.displayedAnomalies.high++;
+        else if (severityLower === 'medium') this.displayedAnomalies.medium++;
+        else if (severityLower === 'low') this.displayedAnomalies.low++;
+        
+        this.totalDisplayed++;
+        this.updateLiveCounters();
+    }
+
+    updateLiveCounters() {
+        // Update the live displayed counters on the dashboard
+        const highElement = document.getElementById('liveHighCount');
+        const mediumElement = document.getElementById('liveMediumCount');
+        const lowElement = document.getElementById('liveLowCount');
+        const totalElement = document.getElementById('liveTotalCount');
+
+        if (highElement) {
+            highElement.textContent = this.displayedAnomalies.high;
+            this.animateCounter(highElement);
+        }
+        if (mediumElement) {
+            mediumElement.textContent = this.displayedAnomalies.medium;
+            this.animateCounter(mediumElement);
+        }
+        if (lowElement) {
+            lowElement.textContent = this.displayedAnomalies.low;
+            this.animateCounter(lowElement);
+        }
+        if (totalElement) {
+            totalElement.textContent = this.totalDisplayed;
+            this.animateCounter(totalElement);
+        }
+
+        // Update live chart if function exists
+        if (window.updateLiveChart) {
+            window.updateLiveChart(this.displayedAnomalies);
+        }
+    }
+
+    animateCounter(element) {
+        // Add a pulse animation to the counter
+        element.classList.add('counter-updated');
+        setTimeout(() => {
+            element.classList.remove('counter-updated');
+        }, 600);
+    }
+
+    resetLiveCounters() {
+        this.displayedAnomalies = { high: 0, medium: 0, low: 0 };
+        this.totalDisplayed = 0;
+        this.updateLiveCounters();
     }
 
     showAnomalyToast(anomaly) {
@@ -85,7 +176,7 @@ class ToastManager {
 
         const severityIcon = this.getSeverityIcon(anomaly.severity);
         const topFeatures = anomaly.top_deviant_features || [];
-        const equipmentId = this.extractEquipmentId(anomaly);
+        const vehicleId = this.extractEquipmentId(anomaly);
         
         // Format the anomaly type for better readability
         const anomalyType = this.formatAnomalyType(anomaly.anomaly_type);
@@ -94,16 +185,16 @@ class ToastManager {
             <div class="toast-header">
                 <div class="toast-title">
                     <span class="severity-indicator"></span>
-                    ${severityIcon} Equipment Alert - ${anomaly.severity}
+                    ${severityIcon} Vehicle Alert - ${anomaly.severity}
                 </div>
                 <div class="toast-time">${this.formatTime(anomaly.timestamp)}</div>
                 <button class="toast-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
             </div>
             <div class="toast-body">
-                <strong>Equipment:</strong> ${equipmentId}<br>
+                <strong>Vehicle ID:</strong> <span style="color: #007bff; font-weight: bold;">${vehicleId}</span><br>
                 <strong>Anomaly Score:</strong> <span style="color: ${this.getScoreColor(anomaly.anomaly_score)}">${anomaly.anomaly_score.toFixed(3)}</span><br>
                 <strong>Issue:</strong> ${anomalyType}<br>
-                <strong>Cluster:</strong> ${anomaly.cluster_id}<br>
+                <strong>Data Cluster:</strong> ${anomaly.cluster_id}<br>
                 ${topFeatures.length > 0 ? `
                 <div class="anomaly-details">
                     <strong>Critical Sensors:</strong><br>
@@ -128,12 +219,24 @@ class ToastManager {
     }
 
     extractEquipmentId(anomaly) {
-        // Generate equipment ID based on cluster and index for realistic look
-        const equipmentTypes = ['EX', 'CO', 'CR', 'LO', 'BU', 'TD', 'SK', 'RT'];
-        const typeIndex = anomaly.cluster_id % equipmentTypes.length;
-        const equipmentType = equipmentTypes[typeIndex];
-        const equipmentNumber = String(1000 + (anomaly.index % 9000)).padStart(4, '0');
-        return `${equipmentType}-${equipmentNumber}`;
+        // Generate realistic Caterpillar vehicle IDs based on anomaly data
+        const catEquipmentTypes = [
+            'CAT320', 'CAT336', 'CAT349', 'CAT773', 'CAT777',  // Excavators & Trucks
+            'CAT950', 'CAT966', 'CAT980', 'CAT992',            // Wheel Loaders  
+            'CAT825', 'CAT836', 'CAT844',                      // Compactors
+            'CAT735', 'CAT745', 'CAT785'                       // Articulated Trucks
+        ];
+        
+        // Use cluster_id to determine equipment type for consistency
+        const typeIndex = anomaly.cluster_id % catEquipmentTypes.length;
+        const equipmentModel = catEquipmentTypes[typeIndex];
+        
+        // Generate consistent vehicle ID based on index
+        // Format: CAT320-V2024-1234 (Model-Year-SerialNumber)
+        const serialNumber = String(1000 + (anomaly.index % 8999)).padStart(4, '0');
+        const vehicleId = `${equipmentModel}-V2024-${serialNumber}`;
+        
+        return vehicleId;
     }
 
     formatAnomalyType(anomalyType) {
@@ -251,11 +354,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     const loaded = await toastManager.loadAnomalies();
     if (loaded) {
         toastManager.startToastInterval();
-        console.log('Toast system initialized with random anomaly selection');
+        console.log('Toast system initialized with real-time dashboard updates');
     }
 });
 
-// Control functions for the dashboard
+// Enhanced control functions for the dashboard
 function toggleToasts() {
     if (toastManager.interval) {
         toastManager.stopToastInterval();
@@ -272,6 +375,12 @@ function toggleToasts() {
 
 function clearToasts() {
     toastManager.clearAllToasts();
+}
+
+function resetCounters() {
+    if (toastManager) {
+        toastManager.resetLiveCounters();
+    }
 }
 
 function showSampleToast() {
@@ -293,6 +402,7 @@ function showSampleToast() {
                 { feature: "fuel_level", deviation_percentage: 234.1 }
             ]
         };
+        toastManager.incrementDisplayedCounter(sampleAnomaly.severity);
         toastManager.showAnomalyToast(sampleAnomaly);
     }
 }

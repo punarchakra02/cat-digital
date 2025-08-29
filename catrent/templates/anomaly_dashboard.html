@@ -16,16 +16,16 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f8f9fa;
             min-height: 100vh;
             color: #333;
         }
 
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, #4c6ef5 0%, #5c7cfa 100%);
+            color: white;
             padding: 20px 0;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
 
@@ -46,7 +46,7 @@
 
         .logo h1 {
             margin: 0;
-            color: #333;
+            color: white;
             font-size: 24px;
             font-weight: 600;
         }
@@ -59,16 +59,17 @@
 
         .nav-links a {
             text-decoration: none;
-            color: #666;
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 500;
             padding: 8px 16px;
             border-radius: 6px;
             transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .nav-links a:hover {
-            background: #f0f0f0;
-            color: #333;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
         }
 
         .container {
@@ -85,12 +86,11 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
+            background: white;
+            border-radius: 12px;
             padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
         }
 
         .card h2 {
@@ -125,17 +125,17 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #4c6ef5;
             color: white;
         }
 
         .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: #51cf66;
             color: white;
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+            background: #ff6b6b;
             color: white;
         }
 
@@ -146,8 +146,8 @@
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .stats-grid {
@@ -158,17 +158,63 @@
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 12px;
+            background: white;
+            border-radius: 8px;
             padding: 20px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card.live-counter {
+            background: #f8f9ff;
+            border: 2px solid #4c6ef5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card.live-counter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #4c6ef5;
+            animation: pulse-bar 2s infinite;
+        }
+
+        @keyframes pulse-bar {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         .stat-number {
             font-size: 32px;
             font-weight: bold;
             margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-number.counter-updated {
+            animation: counter-pulse 0.6s ease;
+            transform: scale(1.2);
+        }
+
+        @keyframes counter-pulse {
+            0% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(76, 110, 245, 0.7);
+            }
+            50% { 
+                transform: scale(1.2); 
+                box-shadow: 0 0 0 10px rgba(76, 110, 245, 0.2);
+            }
+            100% { 
+                transform: scale(1.1); 
+                box-shadow: 0 0 0 0 rgba(76, 110, 245, 0);
+            }
         }
 
         .stat-label {
@@ -194,9 +240,9 @@
             align-items: center;
             gap: 10px;
             padding: 10px 15px;
-            background: rgba(255, 255, 255, 0.7);
+            background: #f8f9fa;
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid #e9ecef;
         }
 
         .status-dot {
@@ -206,7 +252,7 @@
             animation: pulse 2s infinite;
         }
 
-        .status-active { background: #28a745; }
+        .status-active { background: #51cf66; }
         .status-inactive { background: #6c757d; }
 
         @keyframes pulse {
@@ -222,11 +268,11 @@
         }
 
         .feature-item {
-            background: rgba(255, 255, 255, 0.7);
+            background: #f8f9fa;
             padding: 10px 15px;
             border-radius: 8px;
             font-size: 13px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid #e9ecef;
         }
 
         @media (max-width: 768px) {
@@ -264,17 +310,17 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-    </style>
-</head>
-<body>
+        </style>
+    </head>
+    <body>
     <header class="header">
         <div class="header-content">
             <div class="logo">
-                <span style="font-size: 28px;">🏗️</span>
+                <img src="{% static 'images/Caterpillar-shortened.svg.png' %}" alt="Caterpillar Logo" style="height: 40px;">
                 <h1>Cat Digital - Anomaly Monitor</h1>
             </div>
             <nav class="nav-links">
-                <a href="/">🏠 Dashboard</a>
+            <a href="/">🏠 Dashboard</a>
                 <a href="/add/">➕ Add Machine</a>
                 <a href="/anomaly-dashboard/">📊 Anomalies</a>
             </nav>
@@ -282,6 +328,14 @@
     </header>
 
     <div class="container">
+        <!-- Page Title Section -->
+        <div style="text-align: center; margin: 40px 0;">
+            <h1 style="color: #4c6ef5; font-size: 2.5rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 15px;">
+                📊 Anomaly Monitoring Dashboard
+            </h1>
+            <p style="color: #666; font-size: 1.1rem; margin: 0;">Real-time equipment health monitoring and alerting system</p>
+        </div>
+
         <div class="dashboard-grid">
             <!-- Control Panel -->
             <div class="card">
@@ -295,6 +349,9 @@
                     </button>
                     <button class="btn btn-primary" onclick="showSampleToast()">
                         Test Alert
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetCounters()">
+                        Reset Counters
                     </button>
                 </div>
                 
@@ -310,19 +367,40 @@
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-number stat-high" id="highCount">0</div>
-                        <div class="stat-label">High Severity</div>
+                        <div class="stat-label">High Severity (Total)</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number stat-medium" id="mediumCount">0</div>
-                        <div class="stat-label">Medium Severity</div>
+                        <div class="stat-label">Medium Severity (Total)</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number stat-low" id="lowCount">0</div>
-                        <div class="stat-label">Low Severity</div>
+                        <div class="stat-label">Low Severity (Total)</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number" id="totalCount">0</div>
                         <div class="stat-label">Total Anomalies</div>
+                    </div>
+                </div>
+                
+                <!-- Live Alert Counters -->
+                <h3 style="color: #333; margin: 20px 0 10px 0; font-size: 18px;">🔴 Live Alert Counters</h3>
+                <div class="stats-grid">
+                    <div class="stat-card live-counter">
+                        <div class="stat-number stat-high" id="liveHighCount">0</div>
+                        <div class="stat-label">High Alerts Shown</div>
+                    </div>
+                    <div class="stat-card live-counter">
+                        <div class="stat-number stat-medium" id="liveMediumCount">0</div>
+                        <div class="stat-label">Medium Alerts Shown</div>
+                    </div>
+                    <div class="stat-card live-counter">
+                        <div class="stat-number stat-low" id="liveLowCount">0</div>
+                        <div class="stat-label">Low Alerts Shown</div>
+                    </div>
+                    <div class="stat-card live-counter">
+                        <div class="stat-number" id="liveTotalCount">0</div>
+                        <div class="stat-label">Total Alerts Shown</div>
                     </div>
                 </div>
             </div>
