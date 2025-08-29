@@ -366,6 +366,7 @@
 </head>
 <body>
     <div class="container">
+        <img src="https://m.media-amazon.com/images/I/51Ks92NyjeL._UF894,1000_QL80_.jpg" alt="logo" style=" height: 50px; position: fixed; top: 20px; left: 20px; z-index: 30;">
         <h1>🚛 Equipment Checkout</h1>
         
         <!-- Display messages -->
@@ -456,13 +457,19 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="id_operator_id">Operator ID <span class="required">*</span></label>
-                            {{ form.operator_id }}
+                            <select id="id_operator_id" name="operator_id" class="form-control" required>
+                                <option value="">-- Select Operator --</option>
+                                {% for op in operators %}
+                                    <option value="{{ op.operator_id }}">{{ op.operator_id }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label for="id_operator_name">Operator Name <span class="required">*</span></label>
-                            {{ form.operator_name }}
+                            <label for="id_operator_name">Operator Name</label>
+                            <input type="text" id="id_operator_name" class="form-control" readonly>
                         </div>
                     </div>
+
 
                     <h3>🏗️ Site Information</h3>
                     <div class="form-row">
@@ -533,6 +540,19 @@
             const firstInput = document.querySelector('input:not([readonly]):not([type="hidden"])');
             if (firstInput) {
                 firstInput.focus();
+            }
+        });
+        const operators = {{ operators_json|safe }};
+        const operatorSelect = document.getElementById("id_operator_id");
+        const operatorName = document.getElementById("id_operator_name");
+
+        operatorSelect.addEventListener("change", function() {
+            const selectedId = this.value;
+            const op = operators.find(o => o.id === selectedId);
+            if (op) {
+                operatorName.value = op.name;
+            } else {
+                operatorName.value = "";
             }
         });
     </script>

@@ -4,14 +4,15 @@ from django.http import HttpResponse, JsonResponse, FileResponse
 from django.contrib import messages
 from django.utils import timezone
 from django.urls import reverse
+from datetime import datetime
 from datetime import timedelta
 import os
 import pandas as pd
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-
-from .models import Machine, Rental, EquipmentHealth
-from .forms import MachineForm, CheckoutForm
+from .utils import generate_operator_id
+from .models import Machine, Rental, EquipmentHealth, Operator
+from .forms import MachineForm, CheckoutForm, OperatorForm
 from .demand_forecasting import equipment_demand_forecast
 
 def add(request):
@@ -142,38 +143,33 @@ def rental_dashboard(request):
         })
 
 
-def rent_machine(request, machine_id):
-    """Rent a machine manually"""
-    machine = get_object_or_404(Machine, equipment_id=machine_id)
+def rent_machine(request, machine_id): 
+    """Rent a machine manually""" 
+    machine = get_object_or_404(Machine, equipment_id=machine_id) 
     if machine.status == 'Rented':
-        messages.error(request, 'Machine already rented!')
-        return redirect("rental_dashboard")
-
-    if request.method == "POST":
-        operator_id = request.POST.get("operator_id")
-        operator_name = request.POST.get("operator_name", "Unknown")
-        site_id = request.POST.get("site_id")
-        site_name = request.POST.get("site_name", "")
-        days = int(request.POST.get("days", 1))
-        expected_end_date = timezone.now() + timedelta(days=days)
-
-        rental = Rental.objects.create(
-            machine=machine,
-            operator_id=operator_id,
-            operator_name=operator_name,
-            site_id=site_id,
-            site_name=site_name,
-            expected_end_date=expected_end_date,
-            active=True,
-            status='Active'
-        )
-
-        machine.status = 'Rented'
-        machine.save()
-
-        messages.success(request, f'Machine {machine.equipment_id} rented successfully!')
-        return redirect("rental_dashboard")
-
+        messages.error(request, 'Machine already rented!') 
+        return redirect("rental_dashboard") 
+    if request.method == "POST": 
+        operator_id = request.POST.get("operator_id") 
+        operator_name = request.POST.get("operator_name", "Unknown") 
+        site_id = request.POST.get("site_id") 
+        site_name = request.POST.get("site_name", "") 
+        days = int(request.POST.get("days", 1)) 
+        expected_end_date = timezone.now() + timedelta(days=days) 
+        rental = Rental.objects.create( 
+            machine=machine, 
+            operator_id=operator_id, 
+            operator_name=operator_name, 
+            site_id=site_id, 
+            site_name=site_name, 
+            expected_end_date=expected_end_date, 
+            active=True, 
+            status='Active' 
+        ) 
+        machine.status = 'Rented' 
+        machine.save() 
+        messages.success(request, f'Machine {machine.equipment_id} rented successfully!') 
+        return redirect("rental_dashboard") 
     return render(request, "rent_machine.html", {"machine": machine})
 
 
@@ -181,31 +177,60 @@ def qr_scan_info(request, equipment_id):
     """QR scan checkout for admins"""
     machine = get_object_or_404(Machine, equipment_id=equipment_id)
     current_rental = machine.current_rental
+
+    # Get all operators and prepare JSON for JS
+    operators = Operator.objects.all()
+    operators_json = json.dumps([
+        {"id": op.operator_id, "name": op.name, "email": op.email}
+        for op in operators
+    ])
+
+    # If machine is already rented
     if current_rental:
         return render(request, 'checkout.html', {
             'machine': machine,
             'current_rental': current_rental,
             'is_already_rented': True,
+            'operators': operators,
+            'operators_json': operators_json,
         })
 
+    # POST - create rental
     if request.method == "POST":
-        form = CheckoutForm(request.POST)
-        if form.is_valid():
-            rental = Rental.objects.create(
-                machine=machine,
-                operator_id=form.cleaned_data['operator_id'],
-                operator_name=form.cleaned_data['operator_name'],
-                site_id=form.cleaned_data['site_id'],
-                site_name=form.cleaned_data['site_name'],
-                start_date=form.cleaned_data['checkout_date'],
-                expected_end_date=form.cleaned_data['expected_return_date'],
-                active=True,
-                status='Active',
-            )
-            machine.status = 'Rented'
-            machine.save()
-            messages.success(request, f'Equipment {machine.equipment_id} checked out!')
-            return redirect('rental_dashboard')
+        operator_id = request.POST.get("operator_id")
+        operator = Operator.objects.get(operator_id=operator_id)
+
+        site_id = request.POST.get("site_id")
+        site_name = request.POST.get("site_name", "")
+
+        # Convert strings from datetime-local input to aware datetime objects
+        checkout_date_str = request.POST.get("checkout_date")
+        expected_return_date_str = request.POST.get("expected_return_date")
+
+        checkout_date = timezone.make_aware(datetime.strptime(checkout_date_str, "%Y-%m-%dT%H:%M"))
+        expected_return_date = timezone.make_aware(datetime.strptime(expected_return_date_str, "%Y-%m-%dT%H:%M"))
+
+        # Create Rental
+        rental = Rental.objects.create(
+            machine=machine,
+            operator_id=operator.operator_id,
+            operator_name=operator.name,
+            site_id=site_id,
+            site_name=site_name,
+            start_date=checkout_date,
+            expected_end_date=expected_return_date,
+            active=True,
+            status='Active',
+        )
+
+        # Update machine status
+        machine.status = 'Rented'
+        machine.save()
+
+        messages.success(request, f'Equipment {machine.equipment_id} checked out!')
+        return redirect('rental_dashboard')
+
+    # GET - show checkout form
     else:
         initial_data = {
             'equipment_id': machine.equipment_id,
@@ -219,6 +244,8 @@ def qr_scan_info(request, equipment_id):
         'machine': machine,
         'form': form,
         'is_already_rented': False,
+        'operators': operators,
+        'operators_json': operators_json,
     })
 
 
@@ -342,4 +369,16 @@ def get_forecast_image(request, equipment_type):
         # Return a 404 if no image is found
         return HttpResponse("Forecast image not found", status=404)
 
+def add_operator(request):
+    if request.method == "POST":
+        form = OperatorForm(request.POST)
+        if form.is_valid():
+            operator = form.save(commit=False)
+            operator.operator_id = generate_operator_id()
+            operator.save()
+            messages.success(request, f"Operator {operator.operator_id} added successfully!")
+            return redirect("add_operator")
+    else:
+        form = OperatorForm()
+    return render(request, "add_operator.html", {"form": form})
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Machine, Rental, EquipmentUsage, EquipmentHealth
+from .models import Machine, Rental, EquipmentUsage, EquipmentHealth, Operator
 
 # -----------------------------
 # Machine Admin
@@ -38,3 +38,7 @@ class EquipmentHealthAdmin(admin.ModelAdmin):
     list_display = ('machine', 'component', 'status', 'engine_temperature', 'fuel_level', 'battery_voltage', 'severity', 'timestamp', 'resolved')
     list_filter = ('status', 'component', 'resolved')
     search_fields = ('machine__equipment_id', 'component', 'alert_message')
+
+@admin.register(Operator)
+class OperatorAdmin(admin.ModelAdmin):
+    list_display = ('operator_id', 'name', 'email')

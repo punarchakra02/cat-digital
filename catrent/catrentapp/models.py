@@ -52,8 +52,8 @@ class Machine(models.Model):
 
     def generate_qr_code(self):
         # Create QR code with checkout URL for admins
-        checkout_url = f"http://127.0.0.1:8000/checkout/{self.equipment_id}/"
-        
+        checkout_url = f"https://catrent.vercel.app/checkout/{self.equipment_id}/"
+
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -403,3 +403,11 @@ class EquipmentHealth(models.Model):
 
     def _str_(self):
         return f"{self.machine.equipment_id} - {self.component} ({self.status})"
+
+class Operator(models.Model):
+    operator_id = models.CharField(max_length=20, unique=True)  # auto-generated
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+
+    def __str__(self):
+        return f"{self.operator_id} - {self.name}"
