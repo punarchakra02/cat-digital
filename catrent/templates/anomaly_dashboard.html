@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly Monitoring Dashboard - Cat Digital</title>
+    
+    <!-- Load CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/toast.css' %}">
+    
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4c6ef5 0%, #5c7cfa 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo h1 {
+            margin: 0;
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .card h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #4c6ef5;
+            color: white;
+        }
+
+        .btn-success {
+            background: #51cf66;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card.live-counter {
+            background: #f8f9ff;
+            border: 2px solid #4c6ef5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card.live-counter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #4c6ef5;
+            animation: pulse-bar 2s infinite;
+        }
+
+        @keyframes pulse-bar {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-number.counter-updated {
+            animation: counter-pulse 0.6s ease;
+            transform: scale(1.2);
+        }
+
+        @keyframes counter-pulse {
+            0% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(76, 110, 245, 0.7);
+            }
+            50% { 
+                transform: scale(1.2); 
+                box-shadow: 0 0 0 10px rgba(76, 110, 245, 0.2);
+            }
+            100% { 
+                transform: scale(1.1); 
+                box-shadow: 0 0 0 0 rgba(76, 110, 245, 0);
+            }
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .stat-high { color: #dc3545; }
+        .stat-medium { color: #ffc107; }
+        .stat-low { color: #17a2b8; }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-active { background: #51cf66; }
+        .status-inactive { background: #6c757d; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .feature-item {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            border: 1px solid #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        </style>
+    </head>
+    <body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <img src="{% static 'images/Caterpillar-shortened.svg.png' %}" alt="Caterpillar Logo" style="height: 40px;">
+                <h1>Cat Digital - Anomaly Monitor</h1>
+            </div>
+            <nav class="nav-links">
+            <a href="/">🏠 Dashboard</a>
+                <a href="/add/">➕ Add Machine</a>
+                <a href="/anomaly-dashboard/">📊 Anomalies</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Page Title Section -->
+        <div style="text-align: center; margin: 40px 0;">
+            <h1 style="color: #4c6ef5; font-size: 2.5rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 15px;">
+                📊 Anomaly Monitoring Dashboard
+            </h1>
+            <p style="color: #666; font-size: 1.1rem; margin: 0;">Real-time equipment health monitoring and alerting system</p>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Control Panel -->
+            <div class="card">
+                <h2>🎛️ Alert Controls</h2>
+                <div class="controls">
+                    <button id="toggleButton" class="btn btn-danger" onclick="toggleToasts()">
+                        Stop Alerts
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearToasts()">
+                        Clear All
+                    </button>
+                    <button class="btn btn-primary" onclick="showSampleToast()">
+                        Test Alert
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetCounters()">
+                        Reset Counters
+                    </button>
+                </div>
+                
+                <div class="status-indicator">
+                    <div id="statusDot" class="status-dot status-active"></div>
+                    <span id="statusText">Live monitoring active - Alerts every 10 seconds</span>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card">
+                <h2>📈 Anomaly Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number stat-high" id="highCount">0</div>
+                        <div class="stat-label">High Severity (Total)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number stat-medium" id="mediumCount">0</div>
+                        <div class="stat-label">Medium Severity (Total)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number stat-low" id="lowCount">0</div>
+                        <div class="stat-label">Low Severity (Total)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalCount">0</div>
+                        <div class="stat-label">Total Anomalies</div>
+                    </div>
+                </div>
+                
+                <!-- Live Alert Counters -->
+                <h3 style="color: #333; margin: 20px 0 10px 0; font-size: 18px;">🔴 Live Alert Counters</h3>
+                <div class="stats-grid">
+                    <div class="stat-card live-counter">
+                        <div class="stat-number stat-high" id="liveHighCount">0</div>
+                        <div class="stat-label">High Alerts Shown</div>
+                    </div>
+                    <div class="stat-card live-counter">
+                        <div class="stat-number stat-medium" id="liveMediumCount">0</div>
+                        <div class="stat-label">Medium Alerts Shown</div>
+                    </div>
+                    <div class="stat-card live-counter">
+                        <div class="stat-number stat-low" id="liveLowCount">0</div>
+                        <div class="stat-label">Low Alerts Shown</div>
+                    </div>
+                    <div class="stat-card live-counter">
+                        <div class="stat-number" id="liveTotalCount">0</div>
+                        <div class="stat-label">Total Alerts Shown</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Analytics -->
+        <div class="card">
+            <h2>📊 Anomaly Analytics</h2>
+            <div class="chart-container">
+                <canvas id="anomalyChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Common Issues -->
+        <div class="card">
+            <h2>⚠️ Most Common Anomaly Features</h2>
+            <div id="commonFeatures" class="feature-list">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading anomaly data...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load JavaScript -->
+    <script src="{% static 'js/toast.js' %}"></script>
+    
+    <script>
+        let anomalyChart;
+        let anomalyStats = { high: 0, medium: 0, low: 0, total: 0 };
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChart();
+            loadAnomalyStats();
+            
+            // Update status when toast manager changes
+            setInterval(updateStatus, 1000);
+        });
+
+        function initializeChart() {
+            const ctx = document.getElementById('anomalyChart').getContext('2d');
+            anomalyChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['High Severity', 'Medium Severity', 'Low Severity'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            '#dc3545',
+                            '#ffc107',
+                            '#17a2b8'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadAnomalyStats() {
+            try {
+                const response = await fetch('/anomaly-data/');
+                const anomalies = await response.json();
+                
+                // Calculate statistics
+                anomalyStats = { high: 0, medium: 0, low: 0, total: anomalies.length };
+                const featureCount = {};
+                
+                anomalies.forEach(anomaly => {
+                    const severity = anomaly.severity.toLowerCase();
+                    if (severity === 'high') anomalyStats.high++;
+                    else if (severity === 'medium') anomalyStats.medium++;
+                    else if (severity === 'low') anomalyStats.low++;
+                    
+                    // Count feature occurrences
+                    anomaly.top_deviant_features.forEach(feature => {
+                        featureCount[feature.feature] = (featureCount[feature.feature] || 0) + 1;
+                    });
+                });
+                
+                // Update UI
+                updateStatsDisplay();
+                updateChart();
+                updateCommonFeatures(featureCount);
+                
+            } catch (error) {
+                console.error('Error loading anomaly statistics:', error);
+                document.getElementById('commonFeatures').innerHTML = 
+                    '<div style="color: #dc3545; text-align: center;">Error loading anomaly data</div>';
+            }
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('highCount').textContent = anomalyStats.high;
+            document.getElementById('mediumCount').textContent = anomalyStats.medium;
+            document.getElementById('lowCount').textContent = anomalyStats.low;
+            document.getElementById('totalCount').textContent = anomalyStats.total;
+        }
+
+        function updateChart() {
+            anomalyChart.data.datasets[0].data = [
+                anomalyStats.high,
+                anomalyStats.medium,
+                anomalyStats.low
+            ];
+            anomalyChart.update();
+        }
+
+        function updateCommonFeatures(featureCount) {
+            const sortedFeatures = Object.entries(featureCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            const featuresHtml = sortedFeatures.map(([feature, count]) => 
+                `<div class="feature-item">
+                    <strong>${feature.replace(/_/g, ' ')}</strong><br>
+                    <small>${count} occurrences</small>
+                </div>`
+            ).join('');
+            
+            document.getElementById('commonFeatures').innerHTML = featuresHtml || 
+                '<div style="text-align: center; color: #666;">No feature data available</div>';
+        }
+
+        function updateStatus() {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            if (window.toastManager && window.toastManager.interval) {
+                statusDot.className = 'status-dot status-active';
+                statusText.textContent = 'Live monitoring active - Alerts every 10 seconds';
+            } else {
+                statusDot.className = 'status-dot status-inactive';
+                statusText.textContent = 'Monitoring paused';
+            }
+        }
+
+        // Override toggle function to update UI
+        function toggleToasts() {
+            if (window.toastManager) {
+                if (window.toastManager.interval) {
+                    window.toastManager.stopToastInterval();
+                    document.getElementById('toggleButton').textContent = 'Start Alerts';
+                    document.getElementById('toggleButton').classList.remove('btn-danger');
+                    document.getElementById('toggleButton').classList.add('btn-success');
+                } else {
+                    window.toastManager.startToastInterval();
+                    document.getElementById('toggleButton').textContent = 'Stop Alerts';
+                    document.getElementById('toggleButton').classList.remove('btn-success');
+                    document.getElementById('toggleButton').classList.add('btn-danger');
+                }
+            }
+        }
+
+        function clearToasts() {
+            if (window.toastManager) {
+                window.toastManager.clearAllToasts();
+            }
+        }
+
+        function showSampleToast() {
+            if (window.toastManager) {
+                window.showSampleToast();
+            }
+        }
+    </script>
+</body>
+</html>
