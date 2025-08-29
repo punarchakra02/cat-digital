@@ -1,10 +1,10 @@
 from django import forms
-from .models import Machine, Rental, EquipmentUsage
+from .models import Machine, Rental, EquipmentUsage, Operator
 
 class MachineForm(forms.ModelForm):
     class Meta:
         model = Machine
-        fields = ['equipment_id', 'type']
+        fields = ['equipment_id', 'type', 'rate_per_day']
         widgets = {
             'equipment_id': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g., EQX1001'}),
             'type': forms.Select(attrs={'class': 'form-control'}),
@@ -74,3 +74,9 @@ class CheckoutForm(forms.Form):
     expected_return_date = forms.DateTimeField(
         widget=forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local', 'required': True})
     )
+
+
+class OperatorForm(forms.ModelForm):
+    class Meta:
+        model = Operator
+        fields = ['name', 'email']

@@ -1,0 +1,24 @@
+<!-- templates/add_operator.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Operator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-container { max-width: 500px; margin: auto; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; }
+        button { background: #ffd700; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>➕ Add Operator</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add Operator</button>
+        </form>
+    </div>
+</body>
+</html>

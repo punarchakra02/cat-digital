@@ -13,49 +13,75 @@
         
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0; 
+            margin: 0;
             background: #f5f7fa;
             min-height: 100vh;
-            color: #2c3e50;
+            color: #1a1a1a;
+            line-height: 1.6;
         }
         
         .container { 
-            width: 100%; 
-            margin: 0; 
+            max-width: 1400px;
+            margin: 0 auto; 
             background: #ffffff; 
-            padding: 30px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.05);
+            min-height: 100vh;
         }
         
         h1 { 
             text-align: center; 
-            color: #2c3e50;
-            margin-bottom: 40px; 
-            font-size: 2.2rem;
-            font-weight: 600;
-            letter-spacing: -0.5px;
+            color: #1a1a1a;
+            margin-bottom: 50px; 
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(255, 215, 0, 0.3);
         }
         
         .section { 
-            margin-bottom: 40px; 
+            margin-bottom: 50px; 
             background: #ffffff;
-            padding: 20px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ffb300, #1a1a1a);
         }
         
         .section-title { 
             font-size: 1.4rem; 
             color: #2c3e50; 
-            border-left: 3px solid #3498db; 
-            padding-left: 12px; 
+            padding-left: 6px; 
             margin-bottom: 20px; 
             font-weight: 600;
         }
         
         .section-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header-demand-forecast {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 20px;
         }
         
@@ -66,25 +92,38 @@
         .section-controls {
             display: flex;
             align-items: center;
+            gap: 15px;
         }
         
         .form-control {
-            padding: 8px 12px;
-            border: 1px solid #e0e0e0;
-            font-size: 0.9rem;
-            min-width: 180px;
+            padding: 12px 16px;
+            border: 2px solid #f0f0f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            min-width: 200px;
+            transition: all 0.3s ease;
+            background: #ffffff;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
         }
         
         select.form-control {
-            background-color: #fff;
             cursor: pointer;
         }
         
         .forecast-container {
-            min-height: 300px;
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            padding: 20px;
+            min-height: 350px;
+            background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         @keyframes spin {
@@ -92,151 +131,421 @@
             100% { transform: rotate(360deg); }
         }
         
-        .machines-table { 
-            width: 100%; 
-            border-collapse: collapse;
-            margin-bottom: 20px; 
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
-        .machines-table th, .machines-table td { 
-            padding: 14px 16px; 
-            text-align: center;
-            border-bottom: 1px solid #e0e0e0;
+        /* Card Layout Styles */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
         
-        .machines-table th { 
-            background: #2c3e50;
-            color: white;
-            font-weight: 600;
-            font-size: 0.85rem;
-            position: sticky;
+        .machine-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .machine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+            border-color: #ffd700;
+        }
+        
+        .machine-card::before {
+            content: '';
+            position: absolute;
             top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ffd700, #ffb300);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         
-        .machines-table td {
-            background: #ffffff;
+        .machine-card:hover::before {
+            opacity: 1;
         }
         
-        .machines-table tr:hover td {
-            background-color: #f8f9fa;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
         }
         
-        .machines-table tr:last-child td {
-            border-bottom: none;
+        .equipment-id {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+        
+        .equipment-type {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .card-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-size: 0.95rem;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        
+        .rental-period {
+            grid-column: 1 / -1;
+        }
+        
+        .rental-dates {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .date-arrow {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: auto;
         }
         
         .btn { 
-            padding: 10px 18px; 
+            padding: 12px 20px; 
             border: none; 
-            border-radius: 4px; 
+            border-radius: 8px; 
             cursor: pointer; 
             font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 100px;
         }
         
         .btn-primary { 
-            background: #3498db;
-            color: #fff; 
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #1a1a1a; 
+            border: 2px solid transparent;
         }
         
         .btn-primary:hover {
-            background: #2980b9;
+            background: linear-gradient(135deg, #ffb300, #ff9800);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
         }
         
         .btn-success { 
-            background: #2ecc71;
-            color: #fff; 
+            background: linear-gradient(135deg, #1a1a1a, #333333);
+            color: #ffd700; 
+            border: 2px solid #ffd700;
         }
         
         .btn-success:hover {
-            background: #27ae60;
+            background: linear-gradient(135deg, #333333, #1a1a1a);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 26, 26, 0.3);
         }
         
         .btn-danger { 
-            background: #e74c3c;
+            background: linear-gradient(135deg, #ff4757, #ff3742);
             color: #fff; 
+            border: 2px solid transparent;
         }
         
         .btn-danger:hover {
-            background: #c0392b;
+            background: linear-gradient(135deg, #ff3742, #ff2f3c);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
         }
         
         .btn-secondary { 
-            background: #7f8c8d;
-            color: #fff; 
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #1a1a1a;
+            border: 2px solid #dee2e6;
         }
         
         .btn-secondary:hover {
-            background: #6c7a7a;
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+            transform: translateY(-2px);
         }
         
         .btn:disabled { 
-            background: #e9ecef; 
-            color: #95a5a6;
+            background: #f8f9fa; 
+            color: #6c757d;
             cursor: not-allowed;
+            transform: none;
         }
         
         .flex-row { 
             display: flex; 
-            gap: 20px; 
+            gap: 25px; 
             flex-wrap: wrap; 
         }
         
         .card { 
-            background: #ffffff; 
-            border: 1px solid #e0e0e0; 
-            padding: 20px; 
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%); 
+            border: 2px solid #f0f0f0; 
+            border-radius: 16px;
+            padding: 25px; 
             flex: 1; 
-            min-width: 320px;
+            min-width: 350px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.06);
         }
         
         #qr-reader { 
-            width: 350px; 
-            margin: 20px auto;
-            border: 1px solid #e0e0e0;
+            width: 400px; 
+            margin: 30px auto;
+            border: 2px solid #ffd700;
+            border-radius: 12px;
+            overflow: hidden;
         }
         
-        .chart-container { 
-            width: 100%; 
-            max-width: 600px; 
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 20px;
+        .chart-container {
+            width: 100%;
+            min-height: 300px;
+            background-color: #ffffff;
             border: 1px solid #e0e0e0;
+            padding: 20px;
+        }
+
+        /* Forecast container */
+        .forecast-container {
+            width: 100%;
+            max-width: 100%;
+            margin: 20px auto;
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .forecast-image {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .forecast-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #6c757d;
+        }
+        
+        /* Fancy Loader Animation */
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .loader {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+        
+        .loader-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 8px solid transparent;
+            border-radius: 50%;
+            animation: spin 1.2s linear infinite;
+        }
+        
+        .loader-circle-1 {
+            border-top-color: #f6d500;
+            animation-delay: 0s;
+        }
+        
+        .loader-circle-2 {
+            border-right-color: #2c2a29;
+            animation-delay: -0.3s;
+        }
+        
+        .loader-circle-3 {
+            border-bottom-color: #21211f;
+            animation-delay: -0.6s;
+        }
+        
+        .loader-circle-4 {
+            border-left-color: #fbeb05;
+            animation-delay: -0.9s;
+        }
+        
+        .forecast-error {
+            color: #dc3545;
+            padding: 15px;
+            text-align: center;
         }
 
         /* Status Badges */
         .status-badge {
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
         }
         
         .status-good { 
-            background: #2ecc71;
+            background: linear-gradient(135deg, #20bf6b, #26d97c);
             color: white;
         }
         
         .status-warning { 
-            background: #f39c12;
-            color: white;
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #1a1a1a;
         }
         
         .status-critical { 
-            background: #e74c3c;
+            background: linear-gradient(135deg, #ff4757, #ff3742);
             color: white;
         }
         
         .status-maintenance { 
-            background: #3498db;
+            background: linear-gradient(135deg, #3742fa, #2f3df7);
             color: white;
         }
         
         .status-available {
             background: #2ecc71;
             color: white;
+        }
+        
+        /* Machine Count Badges */
+        .machine-counts {
+            display: flex;
+            gap: 10px;
+            margin-left: 15px;
+            align-items: center;
+        }
+        
+        .count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: white;
+            min-width: 60px;
+        }
+        
+        .count-bulldozer {
+            background: #e67e22;
+        }
+        
+        .count-excavator {
+            background: #9b59b6;
+        }
+        
+        .count-loader {
+            background: #3498db;
+        }
+        
+        .count-crane {
+            background: #1abc9c;
+        }
+        
+        .count-total {
+            background: #34495e;
+        }
+        
+        /* Collapsible Sections */
+        .section-header {
+            cursor: pointer;
+        }
+        
+        .collapsible-arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            color: #3498db;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+        
+        .collapsible-arrow.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .section-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            max-height: 2000px; /* Arbitrary large value */
+        }
+        
+        .section-content.collapsed {
+            max-height: 0;
         }
 
         /* QR Modal */
@@ -247,210 +556,415 @@
             left: 0; 
             width: 100%; 
             height: 100%; 
-            background: rgba(0, 0, 0, 0.5); 
+            background: rgba(0, 0, 0, 0.7); 
             z-index: 1000; 
             justify-content: center; 
             align-items: center;
+            backdrop-filter: blur(5px);
         }
         
         #checkin-qr-modal .modal-box { 
             background: #ffffff; 
-            padding: 30px; 
-            border: 1px solid #e0e0e0;
-            max-width: 400px; 
+            padding: 40px; 
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 450px; 
             width: 90%; 
             text-align: center;
+            border: 2px solid #ffd700;
         }
         
         #checkin-qr-modal h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 25px;
+            font-size: 1.4rem;
+            font-weight: 700;
         }
+
+        /* Show All Toggle */
+        .view-toggle {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 25px;
+            border: 2px solid #f0f0f0;
+        }
+        
+        .toggle-btn {
+            flex: 1;
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+        
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #1a1a1a;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+
+        /* Rental Period Styling */
+        .rental-period-display {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            margin-top: 10px;
+        }
+
+        .rental-start {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .rental-end {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        /* Available Machine Cards */
+        .available-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px;
+        }
+
+        .available-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+            border-color: #ffd700;
+        }
+
+        .available-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #20bf6b, #26d97c);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .available-card:hover::before {
+            opacity: 1;
+        }
+
+        .available-card-header {
+            margin-bottom: 20px;
+        }
+
+        .available-card-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Equipment Type Icons */
+        .equipment-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .bulldozer-icon::before { content: '🚜'; }
+        .excavator-icon::before { content: '⛏️'; }
+        .loader-icon::before { content: '🚛'; }
+        .crane-icon::before { content: '🏗️'; }
 
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
-                padding: 15px;
+                padding: 20px;
             }
             
             h1 {
-                font-size: 1.8rem;
-                margin-bottom: 25px;
+                font-size: 2.2rem;
+                margin-bottom: 30px;
             }
             
             .section {
-                padding: 15px;
-                margin-bottom: 25px;
+                padding: 20px;
+                margin-bottom: 30px;
             }
             
             .section-title {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
             }
             
-            .machines-table {
-                font-size: 0.9rem;
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
             }
             
-            .machines-table th, .machines-table td {
-                padding: 10px 8px;
+            .machine-card, .available-card {
+                padding: 20px;
+            }
+            
+            .card-content {
+                grid-template-columns: 1fr;
+                gap: 12px;
             }
             
             .btn {
-                padding: 8px 14px;
+                padding: 10px 16px;
                 font-size: 0.85rem;
+                min-width: 80px;
             }
             
             #qr-reader {
                 width: 100%;
-                max-width: 300px;
+                max-width: 350px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .machine-counts {
+                flex-wrap: wrap;
+                margin-left: 0;
+                margin-top: 10px;
             }
         }
         
         @media (max-width: 480px) {
-            .machines-table th, .machines-table td {
-                padding: 8px 4px;
-                font-size: 0.8rem;
+            .machine-card, .available-card {
+                padding: 15px;
             }
             
             .btn {
-                padding: 6px 10px;
-                font-size: 0.75rem;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .equipment-id {
+                font-size: 1.1rem;
             }
         }
     </style>
 </head>
 <body>
 <div class="container">
+    <img src="https://m.media-amazon.com/images/I/51Ks92NyjeL._UF894,1000_QL80_.jpg" alt="logo" style=" height: 50px; position: fixed; top: 20px; left: 30px; z-index: 30;">
     <h1>Equipment Rental Dashboard</h1>
 
     <!-- QR Code Scan Section -->
     <div class="section">
-        <div class="section-title">Scan Equipment QR Code</div>
-        <div style="text-align:center;">
-            <button class="btn btn-primary" onclick="showQrScanner()">Scan QR Code</button>
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="collapsible-arrow">▼</div>
+            <div class="section-title">Scan Equipment QR Code</div>
         </div>
-        <div id="qr-reader" style="display:none;"></div>
+        <div class="section-content">
+            <div style="text-align:center;">
+                <button class="btn btn-primary" onclick="showQrScanner()">Scan QR Code</button>
+            </div>
+            <div id="qr-reader" style="display:none;"></div>
+        </div>
     </div>
 
     <!-- Rented Machines Section -->
     <div class="section">
-        <div class="section-title">Currently Rented Machines</div>
-        <table class="machines-table">
-            <tr>
-                <th>Equipment ID</th>
-                <th>Operator</th>
-                <th>Rental Period</th>
-                <th>Site</th>
-                <th>Health</th>
-                <th>Actions</th>
-            </tr>
-            {% for item in rented %}
-            <tr>
-                <td>{{ item.rental.machine.equipment_id|default:"N/A" }}</td>
-                <td>
-                    {{ item.rental.operator_name|default:"Unknown" }}<br>
-                    <small>ID: {{ item.rental.operator_id|default:"-" }}</small>
-                </td>
-                <td>
-                    {{ item.rental.start_date|date:"M d, Y H:i" }}<br>→<br>
-                    {{ item.rental.expected_end_date|date:"M d, Y H:i" }}
-                </td>
-                <td>{{ item.rental.site_name|default:item.rental.site_id }}</td>
-                <td>
-                    {% if item.health %}
-                        {% if item.health.status == "Good" %}
-                            <span class="status-badge status-good">{{ item.health.status }}</span>
-                        {% elif item.health.status == "Warning" %}
-                            <span class="status-badge status-warning">{{ item.health.status }}</span>
-                        {% elif item.health.status == "Critical" %}
-                            <span class="status-badge status-critical">{{ item.health.status }}</span>
-                        {% elif item.health.status == "Maintenance Required" %}
-                            <span class="status-badge status-maintenance">{{ item.health.status }}</span>
-                        {% else %}
-                            <span class="status-badge" style="background: #6c757d; color: white;">{{ item.health.status }}</span>
-                        {% endif %}
-                    {% else %}
-                        <span class="status-badge" style="background: #6c757d; color: white;">No Data</span>
-                    {% endif %}
-                </td>
-                <td>
-                    <button class="btn btn-success" type="button" 
-                        onclick="startCheckin('{{ item.rental.id }}', '{{ item.rental.machine.equipment_id }}')">
-                        Check In
-                    </button>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6">No active rentals</td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="collapsible-arrow">▼</div>
+            <div class="section-title">Currently Rented Machines</div>
+            <div class="machine-counts">
+                <span class="count-badge count-bulldozer">Bulldozers: {{ rented_bulldozer_count }}</span>
+                <span class="count-badge count-excavator">Excavators: {{ rented_excavator_count }}</span>
+                <span class="count-badge count-loader">Loaders: {{ rented_loader_count }}</span>
+                <span class="count-badge count-crane">Cranes: {{ rented_crane_count }}</span>
+                <span class="count-badge count-total">Total: {{ rented|length }}</span>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="cards-grid">
+                {% for item in rented %}
+                <div class="machine-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="equipment-id">{{ item.rental.machine.equipment_id|default:"N/A" }}</div>
+                            <div class="equipment-type">{{ item.rental.machine.type|default:"Equipment" }}</div>
+                        </div>
+                        <div>
+                            {% if item.health %}
+                                {% if item.health.status == "Good" %}
+                                    <span class="status-badge status-good">{{ item.health.status }}</span>
+                                {% elif item.health.status == "Warning" %}
+                                    <span class="status-badge status-warning">{{ item.health.status }}</span>
+                                {% elif item.health.status == "Critical" %}
+                                    <span class="status-badge status-critical">{{ item.health.status }}</span>
+                                {% elif item.health.status == "Maintenance Required" %}
+                                    <span class="status-badge status-maintenance">{{ item.health.status }}</span>
+                                {% else %}
+                                    <span class="status-badge" style="background: #6c757d; color: white;">{{ item.health.status }}</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="status-badge" style="background: #6c757d; color: white;">No Data</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="card-content">
+                        <div class="info-item">
+                            <span class="info-label">Operator</span>
+                            <span class="info-value">{{ item.rental.operator_name|default:"Unknown" }}</span>
+                            <small style="color: #666;">ID: {{ item.rental.operator_id|default:"-" }}</small>
+                        </div>
+                        
+                        <div class="info-item">
+                            <span class="info-label">Site</span>
+                            <span class="info-value">{{ item.rental.site_name|default:item.rental.site_id }}</span>
+                        </div>
+                        
+                        <div class="info-item rental-period">
+                            <span class="info-label">Rental Period</span>
+                            <div class="rental-period-display">
+                                <div class="rental-dates">
+                                    <span class="rental-start">{{ item.rental.start_date|date:"M d, Y H:i" }}</span>
+                                    <span class="date-arrow">→</span>
+                                    <span class="rental-end">{{ item.rental.expected_end_date|date:"M d, Y H:i" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <button class="btn btn-success" type="button" 
+                            onclick="startCheckin('{{ item.rental.id }}', '{{ item.rental.machine.equipment_id }}')">
+                            Check In
+                        </button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <h3>No Active Rentals</h3>
+                    <p>There are currently no machines being rented.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
     
     <!-- Demand Forecast Section -->
     <div class="section">
-        <div class="section-header">
-            <div class="section-title">Demand Forecast</div>
+        <div class="section-header-demand-forecast" onclick="toggleSection(this)">
+            <div class="section-title">
+                <div class="collapsible-arrow">▼</div>
+                Demand Forecast</div>
             <div class="section-controls">
                 <select id="forecast-equipment-type" class="form-control">
-                    <option value="Bulldozer">Bulldozer</option>
-                    <option value="Excavator">Excavator</option>
-                    <option value="Loader">Loader</option>
-                    <option value="Crane">Crane</option>
+                    <option value="Bulldozer">🚜 Bulldozer</option>
+                    <option value="Excavator">🏗️ Excavator</option>
+                    <option value="Loader">🚛 Loader</option>
+                    <option value="Crane">🏗️ Crane</option>
                 </select>
             </div>
         </div>
-        <div id="forecast-container" class="forecast-container">
-            <!-- This empty container will be filled with forecast data -->
+        <div class="section-content">
+            <div id="forecast-container" class="forecast-container">
+                <!-- This empty container will be filled with forecast data -->
+            </div>
         </div>
     </div>
 
     <!-- Real-Time Health Chart -->
     <div class="section">
-        <div class="section-title">Real-Time Equipment Health Overview</div>
-        <div class="chart-container">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="collapsible-arrow">▼</div>
+            <div class="section-title">Real-Time Equipment Health Overview</div>
+        </div>
+        <div class="section-content">
+            <div class="chart-container">
             <canvas id="healthChart"></canvas>
             <script id="health-chart-data" type="application/json">
                 {{ health_chart_data|safe }}
             </script>
         </div>
+        </div>
     </div>
 
     <!-- Available Machines Section -->
     <div class="section">
-        <div class="section-title">Available Machines</div>
-        <table class="machines-table">
-            <tr>
-                <th>Equipment ID</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            {% for machine in available %}
-            <tr>
-                <td>{{ machine.equipment_id }}</td>
-                <td>{{ machine.type }}</td>
-                <td><span class="status-badge status-available">Available</span></td>
-                <td>
-                    <a href="{% url 'checkout' machine.equipment_id %}" class="btn btn-primary">Rent</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="4">No available machines</td></tr>
-            {% endfor %}
-        </table>
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="collapsible-arrow">▼</div>
+            <div class="section-title">Available Machines</div>
+            <div class="machine-counts">
+                <span class="count-badge count-bulldozer">Bulldozers: {{ bulldozer_count }}</span>
+                <span class="count-badge count-excavator">Excavators: {{ excavator_count }}</span>
+                <span class="count-badge count-loader">Loaders: {{ loader_count }}</span>
+                <span class="count-badge count-crane">Cranes: {{ crane_count }}</span>
+                <span class="count-badge count-total">Total: {{ available|length }}</span>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="cards-grid">
+                {% for machine in available %}
+                <div class="available-card">
+                    <div class="available-card-header">
+                        <div class="equipment-icon {{ machine.type|lower }}-icon"></div>
+                        <div class="equipment-id">{{ machine.equipment_id }}</div>
+                        <div class="equipment-type">{{ machine.type }}</div>
+                    </div>
+                    
+                    <div class="available-card-content">
+                        <div style="margin-bottom: 20px;">
+                            <span class="status-badge status-available">Available</span>
+                        </div>
+                        
+                        <div class="card-actions">
+                            <a href="{% url 'checkout' machine.equipment_id %}" class="btn btn-primary">
+                                Rent Equipment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <h3>No Available Machines</h3>
+                    <p>All equipment is currently rented or under maintenance.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Check-in QR Modal -->
 <div id="checkin-qr-modal">
     <div class="modal-box">
-        <h3>Scan QR Code to Check In</h3>
-        <div id="checkin-qr-reader" style="width:300px; margin:10px auto;"></div>
-        <button class="btn btn-danger" onclick="closeCheckinQr()">Cancel</button>
+        <h3>🔍 Scan QR Code to Check In</h3>
+        <div id="checkin-qr-reader" style="width:300px; margin:10px auto; border-radius: 8px; overflow: hidden;"></div>
+        <button class="btn btn-danger" onclick="closeCheckinQr()">❌ Cancel</button>
     </div>
 </div>
 
@@ -469,6 +983,18 @@ function showQrScanner() {
     }
 }
 
+function toggleSection(header) {
+    // Get the arrow element
+    const arrow = header.querySelector('.collapsible-arrow');
+    // Get the content element (next sibling of the header)
+    const content = header.nextElementSibling;
+    
+    // Toggle the arrow class
+    arrow.classList.toggle('collapsed');
+    // Toggle the content visibility
+    content.classList.toggle('collapsed');
+}
+
 window.onload = function() {
     // Initialize health chart
     const healthData = JSON.parse(document.getElementById('health-chart-data').textContent);
@@ -479,14 +1005,26 @@ window.onload = function() {
             labels: healthData.labels,
             datasets: [{
                 data: healthData.data,
-                backgroundColor: ['#28a745', '#ffc107', '#fd7e14', '#dc3545'],
+                backgroundColor: ['#20bf6b', '#ffd700', '#ff4757', '#3742fa'],
+                borderWidth: 3,
+                borderColor: '#ffffff'
             }]
         },
         options: {
             responsive: true,
             plugins: {
-                legend: { position: 'bottom' }
-            }
+                legend: { 
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        font: {
+                            size: 12,
+                            weight: 600
+                        }
+                    }
+                }
+            },
+            cutout: '60%'
         }
     });
     
@@ -494,6 +1032,14 @@ window.onload = function() {
     document.getElementById('forecast-equipment-type').addEventListener('change', handleForecastEquipmentChange);
     // Load initial forecast data
     handleForecastEquipmentChange();
+    
+    // Initialize all sections as expanded
+    document.querySelectorAll('.section-content').forEach(content => {
+        content.classList.remove('collapsed');
+    });
+    document.querySelectorAll('.collapsible-arrow').forEach(arrow => {
+        arrow.classList.remove('collapsed');
+    });
 };
 
 // ---------------- Check-in QR Scanner ----------------
@@ -563,14 +1109,19 @@ function handleForecastEquipmentChange() {
     const forecastContainer = document.getElementById('forecast-container');
     
     // This is a placeholder - you can replace this with actual forecast data loading
-    forecastContainer.innerHTML = `<div style="text-align: center; padding: 30px;">
-        <p>Loading forecast data for ${equipmentType}...</p>
-        <div style="margin: 20px 0;">
-            <div style="width: 50px; height: 50px; border: 5px solid #f3f3f3; 
-                 border-top: 5px solid #3498db; border-radius: 50%; 
-                 margin: 0 auto; animation: spin 2s linear infinite;"></div>
+    forecastContainer.innerHTML = `<div style="text-align: center; padding: 40px;">
+        <div style="background: linear-gradient(135deg, #ffd700, #ffb300); color: #1a1a1a; padding: 15px 25px; border-radius: 25px; display: inline-block; font-weight: 600; margin-bottom: 20px;">
+            📊 Loading forecast data for ${equipmentType}
         </div>
-        <p style="color: #7f8c8d;">You can implement actual forecast data retrieval here</p>
+        <div style="margin: 30px 0;">
+            <div style="width: 60px; height: 60px; border: 4px solid #f3f3f3; 
+                 border-top: 4px solid #ffd700; border-radius: 50%; 
+                 margin: 0 auto; animation: spin 1s linear infinite;"></div>
+        </div>
+        <p style="color: #666; font-size: 0.95rem; max-width: 400px; margin: 0 auto;">
+            🔄 You can implement actual forecast data retrieval here to show demand predictions, 
+            rental trends, and availability forecasts for different equipment types.
+        </p>
     </div>`;
     
     // You would typically fetch actual forecast data from your backend here
@@ -596,6 +1147,55 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+// ---------------- Forecast Functionality ----------------
+function handleForecastEquipmentChange() {
+    const equipmentType = document.getElementById('forecast-equipment-type').value;
+    const forecastContainer = document.getElementById('forecast-container');
+    
+    // Show loading indicator with fancy animation
+    forecastContainer.innerHTML = `
+        <div class="forecast-loading" style="width: 100%;">
+            <div style="font-size: 1.1rem; margin-bottom: 10px;">Generating forecast for ${equipmentType}...</div>
+            <div class="loader-container">
+                <div class="loader">
+                    <div class="loader-circle loader-circle-1"></div>
+                    <div class="loader-circle loader-circle-2"></div>
+                    <div class="loader-circle loader-circle-3"></div>
+                    <div class="loader-circle loader-circle-4"></div>
+                </div>
+            </div>
+            <div style="margin-top: 10px; font-size: 0.9rem; color: #95a5a6;">Please wait, this may take a few moments</div>
+        </div>
+    `;
+    
+    // Call the API to generate the forecast
+    fetch(`/forecast/${equipmentType}/`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Display the forecast image
+                forecastContainer.innerHTML = `
+                    <img src="${data.image_url}" alt="${equipmentType} Forecast" class="forecast-image">
+                `;
+            } else {
+                // Show error message
+                forecastContainer.innerHTML = `
+                    <div class="forecast-error">
+                        <strong>Error:</strong> ${data.message}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching forecast:', error);
+            forecastContainer.innerHTML = `
+                <div class="forecast-error">
+                    <strong>Error:</strong> Failed to generate forecast. Please try again later.
+                </div>
+            `;
+        });
 }
 </script>
 </body>
