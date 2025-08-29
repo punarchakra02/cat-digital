@@ -1,0 +1,43 @@
+# Django static files (collected)
+/static/
+/staticfiles/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Logs
+*.log
+
+# Local settings
+local_settings.py
+
+# Media files (uploads)
+media/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
