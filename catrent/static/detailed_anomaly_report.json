@@ -1,0 +1,90 @@
+[
+  {
+    "vehicle_id": "BU3847",
+    "equipment_type": "Bulldozer",
+    "anomaly_type": "Engine Temperature",
+    "severity": "Critical",
+    "timestamp": "2024-01-15T08:30:00Z",
+    "description": "Engine temperature exceeding normal operating range",
+    "location": "Site A - Construction Zone",
+    "operator": "John Smith",
+    "maintenance_required": true
+  },
+  {
+    "vehicle_id": "EX2156",
+    "equipment_type": "Excavator", 
+    "anomaly_type": "Hydraulic Pressure",
+    "severity": "Warning",
+    "timestamp": "2024-01-15T09:15:00Z",
+    "description": "Hydraulic pressure fluctuation detected",
+    "location": "Site B - Excavation Area",
+    "operator": "Sarah Johnson",
+    "maintenance_required": false
+  },
+  {
+    "vehicle_id": "LD4892",
+    "equipment_type": "Loader",
+    "anomaly_type": "Engine RPM",
+    "severity": "Medium",
+    "timestamp": "2024-01-15T10:22:00Z",
+    "description": "Engine RPM irregularities during operation",
+    "location": "Site C - Loading Bay",
+    "operator": "Mike Davis",
+    "maintenance_required": true
+  },
+  {
+    "vehicle_id": "CR7823",
+    "equipment_type": "Crane",
+    "anomaly_type": "Load Capacity",
+    "severity": "Critical",
+    "timestamp": "2024-01-15T11:45:00Z",
+    "description": "Load capacity exceeded safety limits",
+    "location": "Site D - High Rise Construction",
+    "operator": "Emma Wilson",
+    "maintenance_required": true
+  },
+  {
+    "vehicle_id": "BU5634",
+    "equipment_type": "Bulldozer",
+    "anomaly_type": "Track Tension",
+    "severity": "Low",
+    "timestamp": "2024-01-15T12:18:00Z",
+    "description": "Track tension below optimal range",
+    "location": "Site A - Construction Zone",
+    "operator": "David Brown",
+    "maintenance_required": false
+  },
+  {
+    "vehicle_id": "EX3421",
+    "equipment_type": "Excavator",
+    "anomaly_type": "Fuel Consumption",
+    "severity": "Warning",
+    "timestamp": "2024-01-15T13:33:00Z",
+    "description": "Higher than expected fuel consumption rate",
+    "location": "Site E - Mining Area",
+    "operator": "Lisa Anderson",
+    "maintenance_required": false
+  },
+  {
+    "vehicle_id": "LD2789",
+    "equipment_type": "Loader",
+    "anomaly_type": "Transmission",
+    "severity": "Critical",
+    "timestamp": "2024-01-15T14:07:00Z",
+    "description": "Transmission failure detected",
+    "location": "Site B - Material Handling",
+    "operator": "Robert Taylor",
+    "maintenance_required": true
+  },
+  {
+    "vehicle_id": "CR9156",
+    "equipment_type": "Crane",
+    "anomaly_type": "Boom Stability",
+    "severity": "Medium",
+    "timestamp": "2024-01-15T15:20:00Z",
+    "description": "Boom stability sensors indicate slight deviation",
+    "location": "Site F - Bridge Construction",
+    "operator": "Jennifer Martinez",
+    "maintenance_required": true
+  }
+]
