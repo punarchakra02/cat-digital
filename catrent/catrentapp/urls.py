@@ -10,6 +10,7 @@ urlpatterns = [
     path('checkin/<int:rental_id>/', views.checkin_machine, name="checkin_machine"),
     path('forecast/<str:equipment_type>/', views.generate_forecast, name="generate_forecast"),
     path('forecast_image/<str:equipment_type>/', views.get_forecast_image, name="get_forecast_image"),
+    path('anomaly-dashboard/', views.anomaly_dashboard, name="anomaly_dashboard"),
     path('', views.rental_dashboard, name="rental_dashboard"),
     path("add-operator/", views.add_operator, name="add_operator"),
     

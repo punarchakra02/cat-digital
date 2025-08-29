@@ -83,18 +83,17 @@ WSGI_APPLICATION = 'catrent.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-
+# Use SQLite for local development
 DATABASES = {
-    'default': dj_database_url.config(default="postgresql://neondb_owner:npg_YwgKfyUPJ76j@ep-fragrant-river-adr03asc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
 
-
-
+# Commented out PostgreSQL configuration
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
+#     'default': dj_database_url.config(default="postgresql://neondb_owner:npg_YwgKfyUPJ76j@ep-fragrant-river-adr03asc-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
 # }
 
 
@@ -135,6 +134,15 @@ USE_TZ = True
 import os
 
 STATIC_URL = 'static/'
+
+# Static files directories
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Default primary key field type

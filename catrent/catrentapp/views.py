@@ -382,3 +382,8 @@ def add_operator(request):
         form = OperatorForm()
     return render(request, "add_operator.html", {"form": form})
 
+
+def anomaly_dashboard(request):
+    """Anomaly detection dashboard with real-time alerts"""
+    return render(request, 'anomaly_dashboard.html')
+
