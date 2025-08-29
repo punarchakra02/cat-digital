@@ -548,7 +548,7 @@
                         {% if machine.qr_code %}
                             <img src="{{ machine.qr_code.url }}" alt="QR Code" class="qr-code-img">
                             <div style="margin-top: 15px;">
-                                <span style="color: #20bf6b; font-weight: 600; font-size: 0.9rem;">✅ QR Code Generated</span>
+                                <span style="color: #20bf6b; font-weight: 600; font-size: 0.9rem;">QR Code Generated</span>
                             </div>
                         {% else %}
                             <div style="padding: 40px; color: #666;">
@@ -561,11 +561,11 @@
                     <div class="card-actions">
                         {% if machine.qr_code %}
                             <a href="{% url 'download_qr' machine.id %}" class="btn btn-download">
-                                💾 Download QR
+                                Download QR
                             </a>
                         {% endif %}
                         <a href="{% url 'delete_machine' machine.id %}" class="btn btn-delete">
-                            🗑️ Delete
+                            Delete
                         </a>
                     </div>
                 </div>
@@ -631,7 +631,7 @@
                 <tr id="noResultsRow" style="display: none;">
                     <td colspan="4" style="padding: 40px; color: #666; text-align: center;">
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
-                            <span>🔍 No equipment found matching your search criteria</span>
+                            <span> No equipment found matching your search criteria</span>
                             <button onclick="clearSearch()" class="btn btn-secondary" style="min-width: 120px; font-size: 0.8rem; padding: 8px 16px;">Clear Search</button>
                         </div>
                     </td>
@@ -642,7 +642,7 @@
         <!-- Navigation Section -->
         <div class="navigation-section">
             <a href="{% url 'rental_dashboard' %}" class="btn btn-secondary">
-                🏠 Back to Dashboard
+                Back to Dashboard
             </a>
         </div>
     </div>

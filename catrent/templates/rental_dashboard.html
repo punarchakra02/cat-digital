@@ -883,10 +883,10 @@
                 Demand Forecast</div>
             <div class="section-controls">
                 <select id="forecast-equipment-type" class="form-control">
-                    <option value="Bulldozer">🚜 Bulldozer</option>
-                    <option value="Excavator">🏗️ Excavator</option>
-                    <option value="Loader">🚛 Loader</option>
-                    <option value="Crane">🏗️ Crane</option>
+                    <option value="Bulldozer"> Bulldozer</option>
+                    <option value="Excavator">Excavator</option>
+                    <option value="Loader"> Loader</option>
+                    <option value="Crane">Crane</option>
                 </select>
             </div>
         </div>
@@ -964,7 +964,7 @@
     <div class="modal-box">
         <h3>🔍 Scan QR Code to Check In</h3>
         <div id="checkin-qr-reader" style="width:300px; margin:10px auto; border-radius: 8px; overflow: hidden;"></div>
-        <button class="btn btn-danger" onclick="closeCheckinQr()">❌ Cancel</button>
+        <button class="btn btn-danger" onclick="closeCheckinQr()">Cancel</button>
     </div>
 </div>
 
@@ -1111,7 +1111,7 @@ function handleForecastEquipmentChange() {
     // This is a placeholder - you can replace this with actual forecast data loading
     forecastContainer.innerHTML = `<div style="text-align: center; padding: 40px;">
         <div style="background: linear-gradient(135deg, #ffd700, #ffb300); color: #1a1a1a; padding: 15px 25px; border-radius: 25px; display: inline-block; font-weight: 600; margin-bottom: 20px;">
-            📊 Loading forecast data for ${equipmentType}
+            Loading forecast data for ${equipmentType}
         </div>
         <div style="margin: 30px 0;">
             <div style="width: 60px; height: 60px; border: 4px solid #f3f3f3; 
@@ -1119,7 +1119,7 @@ function handleForecastEquipmentChange() {
                  margin: 0 auto; animation: spin 1s linear infinite;"></div>
         </div>
         <p style="color: #666; font-size: 0.95rem; max-width: 400px; margin: 0 auto;">
-            🔄 You can implement actual forecast data retrieval here to show demand predictions, 
+                You can implement actual forecast data retrieval here to show demand predictions, 
             rental trends, and availability forecasts for different equipment types.
         </p>
     </div>`;
