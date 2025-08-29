@@ -883,9 +883,9 @@
                 Demand Forecast</div>
             <div class="section-controls">
                 <select id="forecast-equipment-type" class="form-control">
-                    <option value="Bulldozer"> Bulldozer</option>
+                    <option value="Bulldozer">Bulldozer</option>
                     <option value="Excavator">Excavator</option>
-                    <option value="Loader"> Loader</option>
+                    <option value="Loader">Loader</option>
                     <option value="Crane">Crane</option>
                 </select>
             </div>
@@ -897,19 +897,16 @@
         </div>
     </div>
 
-    <!-- Real-Time Health Chart -->
+    <!-- Health Overview Section -->
     <div class="section">
         <div class="section-header" onclick="toggleSection(this)">
             <div class="collapsible-arrow">▼</div>
-            <div class="section-title">Real-Time Equipment Health Overview</div>
+            <div class="section-title">Equipment Health Overview</div>
         </div>
         <div class="section-content">
-            <div class="chart-container">
-            <canvas id="healthChart"></canvas>
-            <script id="health-chart-data" type="application/json">
-                {{ health_chart_data|safe }}
-            </script>
-        </div>
+            <div style="max-width: 500px; margin: 0 auto;">
+                <canvas id="healthChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -968,6 +965,11 @@
     </div>
 </div>
 
+<!-- Hidden data for charts -->
+<script id="health-chart-data" type="application/json">
+    {{ health_chart_data|safe }}
+</script>
+
 <script>
 function showQrScanner() {
     document.getElementById('qr-reader').style.display = 'block';
@@ -996,42 +998,56 @@ function toggleSection(header) {
 }
 
 window.onload = function() {
-    // Initialize health chart
-    const healthData = JSON.parse(document.getElementById('health-chart-data').textContent);
-    const ctx = document.getElementById('healthChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: healthData.labels,
-            datasets: [{
-                data: healthData.data,
-                backgroundColor: ['#20bf6b', '#ffd700', '#ff4757', '#3742fa'],
-                borderWidth: 3,
-                borderColor: '#ffffff'
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { 
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        font: {
-                            size: 12,
-                            weight: 600
+    // Initialize health chart if element exists
+    const healthChartData = document.getElementById('health-chart-data');
+    const healthChartElement = document.getElementById('healthChart');
+    
+    if (healthChartData && healthChartElement) {
+        try {
+            const healthData = JSON.parse(healthChartData.textContent);
+            const ctx = healthChartElement.getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: healthData.labels,
+                    datasets: [{
+                        data: healthData.data,
+                        backgroundColor: ['#20bf6b', '#ffd700', '#ff4757', '#3742fa'],
+                        borderWidth: 3,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12,
+                                    weight: 600
+                                }
+                            }
                         }
-                    }
+                    },
+                    cutout: '60%'
                 }
-            },
-            cutout: '60%'
+            });
+        } catch (error) {
+            console.error("Error initializing health chart:", error);
         }
-    });
+    }
     
     // Initialize forecast section
-    document.getElementById('forecast-equipment-type').addEventListener('change', handleForecastEquipmentChange);
-    // Load initial forecast data
-    handleForecastEquipmentChange();
+    const forecastSelect = document.getElementById('forecast-equipment-type');
+    if (forecastSelect) {
+        forecastSelect.addEventListener('change', handleForecastEquipmentChange);
+        // Load initial forecast data
+        handleForecastEquipmentChange();
+    } else {
+        console.error("Forecast equipment type dropdown not found");
+    }
     
     // Initialize all sections as expanded
     document.querySelectorAll('.section-content').forEach(content => {
@@ -1103,35 +1119,10 @@ function closeCheckinQr() {
     }
 }
 
-// Forecast equipment type change handler
-function handleForecastEquipmentChange() {
-    const equipmentType = document.getElementById('forecast-equipment-type').value;
-    const forecastContainer = document.getElementById('forecast-container');
-    
-    // This is a placeholder - you can replace this with actual forecast data loading
-    forecastContainer.innerHTML = `<div style="text-align: center; padding: 40px;">
-        <div style="background: linear-gradient(135deg, #ffd700, #ffb300); color: #1a1a1a; padding: 15px 25px; border-radius: 25px; display: inline-block; font-weight: 600; margin-bottom: 20px;">
-            Loading forecast data for ${equipmentType}
-        </div>
-        <div style="margin: 30px 0;">
-            <div style="width: 60px; height: 60px; border: 4px solid #f3f3f3; 
-                 border-top: 4px solid #ffd700; border-radius: 50%; 
-                 margin: 0 auto; animation: spin 1s linear infinite;"></div>
-        </div>
-        <p style="color: #666; font-size: 0.95rem; max-width: 400px; margin: 0 auto;">
-                You can implement actual forecast data retrieval here to show demand predictions, 
-            rental trends, and availability forecasts for different equipment types.
-        </p>
-    </div>`;
-    
-    // You would typically fetch actual forecast data from your backend here
-    // Example:
-    // fetch('/api/forecast/' + equipmentType)
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     // Render the forecast data
-    //   });
-}
+// This function is not used - we're using the function below
+// function handleForecastEquipmentChange() {
+//     // This was a placeholder that's been replaced by the actual implementation below
+// }
 
 // Helper: Get CSRF Token
 function getCookie(name) {

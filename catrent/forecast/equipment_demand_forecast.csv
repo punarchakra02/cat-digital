@@ -1,5 +1,4 @@
 equipment_type,year_week,predicted_demand,target_checkout_count,year,week_num
-Bulldozer,2025-W34,2.0,2.0,2025,34
 Crane,2025-W01,1.0,1.0,2025,1
 Crane,2025-W02,1.0,1.0,2025,2
 Crane,2025-W03,2.0,1.0,2025,3

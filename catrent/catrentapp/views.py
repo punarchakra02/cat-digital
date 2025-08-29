@@ -292,39 +292,43 @@ def generate_forecast(request, equipment_type):
         # Convert to DataFrame
         data = []
         for rental in rentals:
-            data.append({
+            # Build a data dictionary with required fields for forecasting
+            # Only include fields that definitely exist in the model
+            rental_data = {
                 'equipment_id': rental.machine.equipment_id,
                 'equipment_type': rental.machine.type,
                 'checkout_date': rental.start_date,
-                'checkin_date': rental.expected_end_date,
+                'checkin_date': rental.expected_end_date if rental.expected_end_date else rental.actual_end_date,
                 'site_id': rental.site_id,
-                'rate_per_day': float(rental.rate_per_day),
-                'maintenance_count': rental.maintenance,
-                'engine_hours': rental.engine_hours,
-                'idle_hours': rental.idle_hours,
-                'year_week': rental.week,
-                'target_checkout_count': rental.target_checkout_count,
-                'checkout_count_t-1': rental.checkout_count_t_1,
-                'checkout_count_t-4': rental.checkout_count_t_4,
-                'rolling_mean_4w': rental.rolling_mean_4w,
-                'price_index': rental.price_index,
-                'pct_maint': rental.pct_maint,
-                'engine_hours_avg': rental.engine_hours_avg,
-                'idle_ratio_avg': rental.idle_ratio_avg,
-                'equipment_type_encoded': rental.equipment_type_encoded,
-                'usage_efficiency': rental.usage_efficiency,
-                'rental_duration': rental.rental_duration,
-                'rate_relative': rental.rate_relative,
-                'recent_maintenance': rental.recent_maintenance,
-                'maintenance_per_day': rental.maintenance_per_day,
-                'engine_hours_per_day': rental.engine_hours_per_day,
-                'month_sin': rental.month_sin,
-                'month_cos': rental.month_cos,
-                'week_sin': rental.week_sin,
-                'week_cos': rental.week_cos,
-                'rolling_std_4w': rental.rolling_std_4w,
-                'rolling_max_4w': rental.rolling_max_4w
-            })
+                'rate_per_day': float(rental.rate_per_day) if hasattr(rental, 'rate_per_day') else 0.0,
+                'year_week': rental.week if hasattr(rental, 'week') else datetime.now().strftime("%Y-W%U")
+            }
+            
+            # Add optional fields if they exist
+            if hasattr(rental, 'maintenance'):
+                rental_data['maintenance_count'] = rental.maintenance
+            
+            if hasattr(rental, 'engine_hours'):
+                rental_data['engine_hours'] = rental.engine_hours
+                
+            if hasattr(rental, 'idle_hours'):
+                rental_data['idle_hours'] = rental.idle_hours
+                
+            # Add demand forecast specific fields
+            for field in [
+                'target_checkout_count', 'checkout_count_t_1', 'checkout_count_t_4',
+                'rolling_mean_4w', 'price_index', 'pct_maint', 'engine_hours_avg',
+                'idle_ratio_avg', 'equipment_type_encoded', 'usage_efficiency',
+                'rental_duration', 'rate_relative', 'recent_maintenance',
+                'maintenance_per_day', 'engine_hours_per_day', 'month_sin',
+                'month_cos', 'week_sin', 'week_cos', 'rolling_std_4w', 'rolling_max_4w'
+            ]:
+                if hasattr(rental, field) and getattr(rental, field) is not None:
+                    # Use the actual field name in the model (t_1 vs t-1)
+                    actual_field = field.replace('-', '_') if '-' in field else field
+                    rental_data[field] = getattr(rental, actual_field)
+            
+            data.append(rental_data)
         
         df = pd.DataFrame(data)
         
@@ -338,6 +342,9 @@ def generate_forecast(request, equipment_type):
         # Generate forecast
         forecast_result = equipment_demand_forecast(df, output_folder=forecast_dir)
         
+        # Log successful forecast generation
+        print(f"Successfully generated forecast for {equipment_type}")
+        
         return JsonResponse({
             'status': 'success',
             'message': f'Forecast generated for {equipment_type}',
@@ -346,6 +353,7 @@ def generate_forecast(request, equipment_type):
         
     except Exception as e:
         import traceback
+        print(f"Error generating forecast for {equipment_type}: {str(e)}")
         print(traceback.format_exc())
         return JsonResponse({
             'status': 'error',
@@ -366,8 +374,13 @@ def get_forecast_image(request, equipment_type):
         if os.path.exists(combined_path):
             return FileResponse(open(combined_path, 'rb'), content_type='image/png')
         
+        # If no forecast images exist, check for the feature importance image
+        feature_importance_path = os.path.join(forecast_dir, "feature_importance.png")
+        if os.path.exists(feature_importance_path):
+            return FileResponse(open(feature_importance_path, 'rb'), content_type='image/png')
+            
         # Return a 404 if no image is found
-        return HttpResponse("Forecast image not found", status=404)
+        return HttpResponse("Forecast image not found. Please generate a forecast first.", status=404)
 
 def add_operator(request):
     if request.method == "POST":
