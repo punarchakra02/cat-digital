@@ -652,7 +652,9 @@ def equipment_demand_forecast(df, output_folder='forecast/', train_year_cutoff=2
         'summary': summary,
         'output_folder': output_folder
     }
-    
+
+    print(results['metrics'])
+
     print(f"\nDemand forecasting completed successfully!")
     print(f"All outputs saved to: {output_folder}")
     

@@ -12,4 +12,5 @@ urlpatterns = [
     path('forecast_image/<str:equipment_type>/', views.get_forecast_image, name="get_forecast_image"),
     path('', views.rental_dashboard, name="rental_dashboard"),
     path("add-operator/", views.add_operator, name="add_operator"),
+    
 ]

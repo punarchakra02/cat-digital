@@ -21,7 +21,7 @@ from catrentapp.models import Machine, Rental
 df = pd.read_csv("catrentapp/equipment_rentals_with_features.csv")
 
 # only the data which has start_date less than feb 15 2025
-df = df[df["checkout_date"] < "2024-06-11"]
+df = df[df["checkout_date"] < "2023-12-23"]
 print(f"Starting upload from filtered CSV. Total rows to process: {len(df)}")
 
 required_columns = ['equipment_id', 'checkout_date', 'checkin_date', 'site_id', 'rolling_std_4w', 'rolling_max_4w']
@@ -137,6 +137,14 @@ for _, row in df.iterrows():
     if hasattr(end_date, 'tz') and end_date.tz is not None:
         end_date = end_date.tz_localize(None)
 
+    operators = {
+        'OPR001': "Girendra Singh",
+        'OPR002': "Vijay",
+        'OPR003': "Ayush Mishra"
+    }
+
+    operator_id, operator_name = random.choice(list(operators.items()))
+
     rental, created = Rental.objects.update_or_create(
         machine=machine,
         start_date=row["checkout_date"],  # key
@@ -148,8 +156,8 @@ for _, row in df.iterrows():
             "maintenance": row["maintenance_count"],
             "engine_hours": row["engine_hours"],
             "idle_hours": row["idle_hours"],
-            "operator_id": "AUTO",
-            "operator_name": "System Upload",
+            "operator_id": operator_id,
+            "operator_name": operator_name,
             "status": "Completed" if row['checkin_date'] < pd.Timestamp.now() else "Active",
             "active": False if row['checkin_date'] < pd.Timestamp.now() else True,
 
