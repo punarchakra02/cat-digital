@@ -9,6 +9,8 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         /* Global Styles */
+
+        
         * { box-sizing: border-box; }
         
         body { 
@@ -772,6 +774,506 @@
                 font-size: 1.1rem;
             }
         }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #4c6ef5;
+            color: white;
+        }
+
+        .btn-success {
+            background: #51cf66;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card.live-counter {
+            background: #f8f9ff;
+            border: 2px solid #4c6ef5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card.live-counter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #4c6ef5;
+            animation: pulse-bar 2s infinite;
+        }
+
+        @keyframes pulse-bar {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-number.counter-updated {
+            animation: counter-pulse 0.6s ease;
+            transform: scale(1.2);
+        }
+
+        @keyframes counter-pulse {
+            0% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(76, 110, 245, 0.7);
+            }
+            50% { 
+                transform: scale(1.2); 
+                box-shadow: 0 0 0 10px rgba(76, 110, 245, 0.2);
+            }
+            100% { 
+                transform: scale(1.1); 
+                box-shadow: 0 0 0 0 rgba(76, 110, 245, 0);
+            }
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .stat-high { color: #dc3545; }
+        .stat-medium { color: #ffc107; }
+        .stat-low { color: #17a2b8; }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-active { background: #51cf66; }
+        .status-inactive { background: #6c757d; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+        }
+
+        .feature-item {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            border: 1px solid #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Enhanced Toast Notification Styles */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 420px;
+}
+
+.toast {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    margin-bottom: 15px;
+    padding: 20px;
+    transform: translateX(450px);
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    opacity: 0;
+    border-left: 5px solid;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast.removing {
+    transform: translateX(450px);
+    opacity: 0;
+}
+
+.toast.severity-high {
+    border-left-color: #dc3545;
+    background: linear-gradient(135deg, #fff 0%, #ffebee 60%, #ffcdd2 100%);
+    box-shadow: 0 8px 32px rgba(220, 53, 69, 0.3);
+}
+
+.toast.severity-medium {
+    border-left-color: #ff9800;
+    background: linear-gradient(135deg, #fff 0%, #fff8e1 60%, #ffecb3 100%);
+    box-shadow: 0 8px 32px rgba(255, 152, 0, 0.3);
+}
+
+.toast.severity-low {
+    border-left-color: #2196f3;
+    background: linear-gradient(135deg, #fff 0%, #e3f2fd 60%, #bbdefb 100%);
+    box-shadow: 0 8px 32px rgba(33, 150, 243, 0.3);
+}
+
+.toast-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.toast-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.3;
+    flex: 1;
+}
+
+.toast-time {
+    font-size: 11px;
+    color: #666;
+    font-weight: 500;
+    text-align: right;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-left: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.toast-close {
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #666;
+    padding: 4px 8px;
+    margin-left: 8px;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.toast-close:hover {
+    background: rgba(0, 0, 0, 0.2);
+    color: #333;
+    transform: scale(1.1);
+}
+
+.toast-body {
+    font-size: 13px;
+    color: #444;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+.toast-body strong {
+    color: #222;
+    font-weight: 600;
+}
+
+.anomaly-details {
+    margin-top: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    font-size: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.feature-deviation {
+    display: inline-block;
+    margin: 3px 4px;
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-family: 'Segoe UI', monospace;
+    font-weight: 600;
+    font-size: 11px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.severity-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: pulse-indicator 2s infinite;
+}
+
+.severity-high .severity-indicator {
+    background: radial-gradient(circle, #dc3545 0%, #c82333 100%);
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.6);
+}
+
+.severity-medium .severity-indicator {
+    background: radial-gradient(circle, #ff9800 0%, #f57c00 100%);
+    box-shadow: 0 0 10px rgba(255, 152, 0, 0.6);
+}
+
+.severity-low .severity-indicator {
+    background: radial-gradient(circle, #2196f3 0%, #1976d2 100%);
+    box-shadow: 0 0 10px rgba(33, 150, 243, 0.6);
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    transition: width linear;
+    border-radius: 0 0 12px 0;
+}
+
+.severity-high .toast-progress {
+    background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.5);
+}
+
+.severity-medium .toast-progress {
+    background: linear-gradient(90deg, #ff9800 0%, #f57c00 100%);
+    box-shadow: 0 0 8px rgba(255, 152, 0, 0.5);
+}
+
+.severity-low .toast-progress {
+    background: linear-gradient(90deg, #2196f3 0%, #1976d2 100%);
+    box-shadow: 0 0 8px rgba(33, 150, 243, 0.5);
+}
+
+/* Enhanced animations */
+.toast.severity-high {
+    animation: pulse-severe 3s infinite;
+}
+
+@keyframes pulse-severe {
+    0% { 
+        box-shadow: 0 8px 32px rgba(220, 53, 69, 0.3);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 12px 40px rgba(220, 53, 69, 0.5);
+        transform: scale(1.02);
+    }
+    100% { 
+        box-shadow: 0 8px 32px rgba(220, 53, 69, 0.3);
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse-indicator {
+    0% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
+    100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Hover effects */
+.toast:hover {
+    transform: translateX(-5px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.toast:hover .toast-progress {
+    animation-play-state: paused;
+}
+
+/* Equipment ID styling */
+.toast-body {
+    line-height: 1.6;
+}
+
+.toast-body br {
+    margin-bottom: 6px;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .toast {
+        transform: translateY(-150px);
+        padding: 16px;
+    }
+    
+    .toast.show {
+        transform: translateY(0);
+    }
+    
+    .toast.removing {
+        transform: translateY(-150px);
+    }
+    
+    .toast-title {
+        font-size: 14px;
+    }
+    
+    .toast-body {
+        font-size: 12px;
+    }
+    
+    .feature-deviation {
+        margin: 2px 2px;
+        padding: 4px 6px;
+        font-size: 10px;
+    }
+}
+
+/* Loading state */
+.toast.loading {
+    opacity: 0.7;
+}
+
+.toast.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%);}
+}
+
     </style>
 </head>
 <body>
@@ -903,12 +1405,93 @@
             <div class="collapsible-arrow">▼</div>
             <div class="section-title">Real-Time Equipment Health Overview</div>
         </div>
-        <div class="section-content">
+        <div class="dashboard-grid">
+            <!-- Control Panel -->
+            <div class="card">
+                <h2>🎛 Alert Controls</h2>
+                <div class="controls">
+                    <button id="toggleButton" class="btn btn-danger" onclick="toggleToasts()">
+                        Stop Alerts
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearToasts()">
+                        Clear All
+                    </button>
+                    <button class="btn btn-primary" onclick="showSampleToast()">
+                        Test Alert
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetCounters()">
+                        Reset Counters
+                    </button>
+                </div>
+                
+                <div class="status-indicator">
+                    <div id="statusDot" class="status-dot status-active"></div>
+                    <span id="statusText">Live monitoring active - Alerts every 10 seconds</span>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="card">
+                <h2>📈 Anomaly Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number stat-high" id="highCount">0</div>
+                        <div class="stat-label">High Severity (Total)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number stat-medium" id="mediumCount">0</div>
+                        <div class="stat-label">Medium Severity (Total)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number stat-low" id="lowCount">0</div>
+                        <div class="stat-label">Low Severity (Total)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalCount">0</div>
+                        <div class="stat-label">Total Anomalies</div>
+                    </div>
+                </div>
+                
+                <!-- Live Alert Counters -->
+                <h3 style="color: #333; margin: 20px 0 10px 0; font-size: 18px;">🔴 Live Alert Counters</h3>
+                <div class="stats-grid">
+                    <div class="stat-card live-counter">
+                        <div class="stat-number stat-high" id="liveHighCount">0</div>
+                        <div class="stat-label">High Alerts Shown</div>
+                    </div>
+                    <div class="stat-card live-counter">
+                        <div class="stat-number stat-medium" id="liveMediumCount">0</div>
+                        <div class="stat-label">Medium Alerts Shown</div>
+                    </div>
+                    <div class="stat-card live-counter">
+                        <div class="stat-number stat-low" id="liveLowCount">0</div>
+                        <div class="stat-label">Low Alerts Shown</div>
+                    </div>
+                    <div class="stat-card live-counter">
+                        <div class="stat-number" id="liveTotalCount">0</div>
+                        <div class="stat-label">Total Alerts Shown</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts and Analytics -->
+        <div class="card">
+            <h2>📊 Anomaly Analytics</h2>
             <div class="chart-container">
-            <canvas id="healthChart"></canvas>
-            <script id="health-chart-data" type="application/json">
-                {{ health_chart_data|safe }}
-            </script>
+                <canvas id="anomalyChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Common Issues -->
+        <div class="card">
+            <h2>⚠ Most Common Anomaly Features</h2>
+            <div id="commonFeatures" class="feature-list">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading anomaly data...
+                </div>
+            </div>
         </div>
         </div>
     </div>
@@ -994,44 +1577,51 @@ function toggleSection(header) {
     // Toggle the content visibility
     content.classList.toggle('collapsed');
 }
-
 window.onload = function() {
     // Initialize health chart
-    const healthData = JSON.parse(document.getElementById('health-chart-data').textContent);
-    const ctx = document.getElementById('healthChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: healthData.labels,
-            datasets: [{
-                data: healthData.data,
-                backgroundColor: ['#20bf6b', '#ffd700', '#ff4757', '#3742fa'],
-                borderWidth: 3,
-                borderColor: '#ffffff'
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { 
-                    position: 'bottom',
-                    labels: {
-                        padding: 20,
-                        font: {
-                            size: 12,
-                            weight: 600
+    const healthDataElement = document.getElementById('health-chart-data');
+    const healthChartElement = document.getElementById('healthChart');
+    
+    if (healthDataElement && healthChartElement) {
+        const healthData = JSON.parse(healthDataElement.textContent);
+        const ctx = healthChartElement.getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: healthData.labels,
+                datasets: [{
+                    data: healthData.data,
+                    backgroundColor: ['#20bf6b', '#ffd700', '#ff4757', '#3742fa'],
+                    borderWidth: 3,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 12,
+                                weight: 600
+                            }
                         }
                     }
-                }
-            },
-            cutout: '60%'
-        }
-    });
+                },
+                cutout: '60%'
+            }
+        });
+    }
     
     // Initialize forecast section
-    document.getElementById('forecast-equipment-type').addEventListener('change', handleForecastEquipmentChange);
-    // Load initial forecast data
-    handleForecastEquipmentChange();
+    const forecastSelect = document.getElementById('forecast-equipment-type');
+    if (forecastSelect) {
+        forecastSelect.addEventListener('change', handleForecastEquipmentChange);
+        // Load initial forecast data
+        handleForecastEquipmentChange();
+    }
     
     // Initialize all sections as expanded
     document.querySelectorAll('.section-content').forEach(content => {
@@ -1042,11 +1632,197 @@ window.onload = function() {
     });
 };
 
-// ---------------- Check-in QR Scanner ----------------
-let checkinQrScanner;
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    initializeChart();
+    loadAnomalyStats();
+    
+    // Update status when toast manager changes
+    setInterval(updateStatus, 1000);
+    
+    // Initialize toast system
+    initializeToastSystem();
+});
 
+async function initializeToastSystem() {
+    toastManager = new ToastManager();
+    
+    // Load anomalies and start showing random toasts
+    const loaded = await toastManager.loadAnomalies();
+    if (loaded) {
+        console.log('Toast system initialized with real-time dashboard updates');
+    }
+}
+
+function initializeChart() {
+    const anomalyChartElement = document.getElementById('anomalyChart');
+    if (anomalyChartElement) {
+        const ctx = anomalyChartElement.getContext('2d');
+        anomalyChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['High Severity', 'Medium Severity', 'Low Severity'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: [
+                        '#dc3545',
+                        '#ffc107',
+                        '#17a2b8'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+}
+
+async function loadAnomalyStats() {
+    try {
+        const response = await fetch('/anomaly-data/');
+        const anomalies = await response.json();
+        
+        // Calculate statistics
+        anomalyStats = { high: 0, medium: 0, low: 0, total: anomalies.length };
+        const featureCount = {};
+        
+        anomalies.forEach(anomaly => {
+            const severity = anomaly.severity.toLowerCase();
+            if (severity === 'high') anomalyStats.high++;
+            else if (severity === 'medium') anomalyStats.medium++;
+            else if (severity === 'low') anomalyStats.low++;
+            
+            // Count feature occurrences
+            if (anomaly.top_deviant_features) {
+                anomaly.top_deviant_features.forEach(feature => {
+                    featureCount[feature.feature] = (featureCount[feature.feature] || 0) + 1;
+                });
+            }
+        });
+        
+        // Update UI
+        updateStatsDisplay();
+        updateChart();
+        updateCommonFeatures(featureCount);
+        
+    } catch (error) {
+        console.error('Error loading anomaly statistics:', error);
+        const featuresElement = document.getElementById('commonFeatures');
+        if (featuresElement) {
+            featuresElement.innerHTML = 
+                '<div style="color: #dc3545; text-align: center;">Error loading anomaly data</div>';
+        }
+    }
+}
+
+function updateStatsDisplay() {
+    const elements = {
+        highCount: document.getElementById('highCount'),
+        mediumCount: document.getElementById('mediumCount'),
+        lowCount: document.getElementById('lowCount'),
+        totalCount: document.getElementById('totalCount')
+    };
+    
+    if (elements.highCount) elements.highCount.textContent = anomalyStats.high;
+    if (elements.mediumCount) elements.mediumCount.textContent = anomalyStats.medium;
+    if (elements.lowCount) elements.lowCount.textContent = anomalyStats.low;
+    if (elements.totalCount) elements.totalCount.textContent = anomalyStats.total;
+}
+
+function updateChart() {
+    if (anomalyChart) {
+        anomalyChart.data.datasets[0].data = [
+            anomalyStats.high,
+            anomalyStats.medium,
+            anomalyStats.low
+        ];
+        anomalyChart.update();
+    }
+}
+
+function updateCommonFeatures(featureCount) {
+    const featuresElement = document.getElementById('commonFeatures');
+    if (!featuresElement) return;
+    
+    const sortedFeatures = Object.entries(featureCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+    
+    const featuresHtml = sortedFeatures.map(([feature, count]) => 
+        `<div class="feature-item">
+            <strong>${feature.replace(/_/g, ' ')}</strong><br>
+            <small>${count} occurrences</small>
+        </div>`
+    ).join('');
+    
+    featuresElement.innerHTML = featuresHtml || 
+        '<div style="text-align: center; color: #666;">No feature data available</div>';
+}
+
+function updateStatus() {
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    
+    if (!statusDot || !statusText) return;
+    
+    if (toastManager && toastManager.interval) {
+        statusDot.className = 'status-dot status-active';
+        statusText.textContent = 'Live monitoring active - Alerts every 10 seconds';
+    } else {
+        statusDot.className = 'status-dot status-inactive';
+        statusText.textContent = 'Monitoring paused';
+    }
+}
+
+// Override toggle function to update UI
+function toggleToasts() {
+    if (toastManager) {
+        if (toastManager.interval) {
+            toastManager.stopToastInterval();
+            const toggleButton = document.getElementById('toggleButton');
+            if (toggleButton) {
+                toggleButton.textContent = 'Start Alerts';
+                toggleButton.classList.remove('btn-danger');
+                toggleButton.classList.add('btn-success');
+            }
+        } else {
+            toastManager.startToastInterval();
+            const toggleButton = document.getElementById('toggleButton');
+            if (toggleButton) {
+                toggleButton.textContent = 'Stop Alerts';
+                toggleButton.classList.remove('btn-success');
+                toggleButton.classList.add('btn-danger');
+            }
+        }
+    }
+}
+
+function clearToasts() {
+    if (toastManager) {
+        toastManager.clearAllToasts();
+    }
+}
+
+function showSampleToast() {
+    if (toastManager) {
+        showSampleToast();
+    }
+}
+
+// ---------------- Check-in QR Scanner ----------------
 function startCheckin(rentalId, expectedEquipmentId) {
-    document.getElementById('checkin-qr-modal').style.display = 'flex';
+    const modal = document.getElementById('checkin-qr-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
 
     if (!checkinQrScanner) {
         checkinQrScanner = new Html5Qrcode("checkin-qr-reader");
@@ -1097,7 +1873,10 @@ function startCheckin(rentalId, expectedEquipmentId) {
 }
 
 function closeCheckinQr() {
-    document.getElementById('checkin-qr-modal').style.display = 'none';
+    const modal = document.getElementById('checkin-qr-modal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
     if (checkinQrScanner) {
         checkinQrScanner.stop();
     }
@@ -1105,54 +1884,12 @@ function closeCheckinQr() {
 
 // Forecast equipment type change handler
 function handleForecastEquipmentChange() {
-    const equipmentType = document.getElementById('forecast-equipment-type').value;
+    const equipmentTypeElement = document.getElementById('forecast-equipment-type');
     const forecastContainer = document.getElementById('forecast-container');
     
-    // This is a placeholder - you can replace this with actual forecast data loading
-    forecastContainer.innerHTML = `<div style="text-align: center; padding: 40px;">
-        <div style="background: linear-gradient(135deg, #ffd700, #ffb300); color: #1a1a1a; padding: 15px 25px; border-radius: 25px; display: inline-block; font-weight: 600; margin-bottom: 20px;">
-            📊 Loading forecast data for ${equipmentType}
-        </div>
-        <div style="margin: 30px 0;">
-            <div style="width: 60px; height: 60px; border: 4px solid #f3f3f3; 
-                 border-top: 4px solid #ffd700; border-radius: 50%; 
-                 margin: 0 auto; animation: spin 1s linear infinite;"></div>
-        </div>
-        <p style="color: #666; font-size: 0.95rem; max-width: 400px; margin: 0 auto;">
-            🔄 You can implement actual forecast data retrieval here to show demand predictions, 
-            rental trends, and availability forecasts for different equipment types.
-        </p>
-    </div>`;
+    if (!equipmentTypeElement || !forecastContainer) return;
     
-    // You would typically fetch actual forecast data from your backend here
-    // Example:
-    // fetch('/api/forecast/' + equipmentType)
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     // Render the forecast data
-    //   });
-}
-
-// Helper: Get CSRF Token
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-// ---------------- Forecast Functionality ----------------
-function handleForecastEquipmentChange() {
-    const equipmentType = document.getElementById('forecast-equipment-type').value;
-    const forecastContainer = document.getElementById('forecast-container');
+    const equipmentType = equipmentTypeElement.value;
     
     // Show loading indicator with fancy animation
     forecastContainer.innerHTML = `
@@ -1197,6 +1934,585 @@ function handleForecastEquipmentChange() {
             `;
         });
 }
+
+// Helper: Get CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+let anomalyChart;
+        let anomalyStats = { high: 0, medium: 0, low: 0, total: 0 };
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChart();
+            loadAnomalyStats();
+            
+            // Update status when toast manager changes
+            setInterval(updateStatus, 1000);
+        });
+
+        function initializeChart() {
+            const ctx = document.getElementById('anomalyChart').getContext('2d');
+            anomalyChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['High Severity', 'Medium Severity', 'Low Severity'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            '#dc3545',
+                            '#ffc107',
+                            '#17a2b8'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadAnomalyStats() {
+            try {
+                const response = await fetch('/anomaly-data/');
+                const anomalies = await response.json();
+                
+                // Calculate statistics
+                anomalyStats = { high: 0, medium: 0, low: 0, total: anomalies.length };
+                const featureCount = {};
+                
+                anomalies.forEach(anomaly => {
+                    const severity = anomaly.severity.toLowerCase();
+                    if (severity === 'high') anomalyStats.high++;
+                    else if (severity === 'medium') anomalyStats.medium++;
+                    else if (severity === 'low') anomalyStats.low++;
+                    
+                    // Count feature occurrences
+                    anomaly.top_deviant_features.forEach(feature => {
+                        featureCount[feature.feature] = (featureCount[feature.feature] || 0) + 1;
+                    });
+                });
+                
+                // Update UI
+                updateStatsDisplay();
+                updateChart();
+                updateCommonFeatures(featureCount);
+                
+            } catch (error) {
+                console.error('Error loading anomaly statistics:', error);
+                document.getElementById('commonFeatures').innerHTML = 
+                    '<div style="color: #dc3545; text-align: center;">Error loading anomaly data</div>';
+            }
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('highCount').textContent = anomalyStats.high;
+            document.getElementById('mediumCount').textContent = anomalyStats.medium;
+            document.getElementById('lowCount').textContent = anomalyStats.low;
+            document.getElementById('totalCount').textContent = anomalyStats.total;
+        }
+
+        function updateChart() {
+            anomalyChart.data.datasets[0].data = [
+                anomalyStats.high,
+                anomalyStats.medium,
+                anomalyStats.low
+            ];
+            anomalyChart.update();
+        }
+
+        function updateCommonFeatures(featureCount) {
+            const sortedFeatures = Object.entries(featureCount)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10);
+            
+            const featuresHtml = sortedFeatures.map(([feature, count]) => 
+                `<div class="feature-item">
+                    <strong>${feature.replace(/_/g, ' ')}</strong><br>
+                    <small>${count} occurrences</small>
+                </div>`
+            ).join('');
+            
+            document.getElementById('commonFeatures').innerHTML = featuresHtml || 
+                '<div style="text-align: center; color: #666;">No feature data available</div>';
+        }
+
+        function updateStatus() {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            if (window.toastManager && window.toastManager.interval) {
+                statusDot.className = 'status-dot status-active';
+                statusText.textContent = 'Live monitoring active - Alerts every 10 seconds';
+            } else {
+                statusDot.className = 'status-dot status-inactive';
+                statusText.textContent = 'Monitoring paused';
+            }
+        }
+
+        // Override toggle function to update UI
+        function toggleToasts() {
+            if (window.toastManager) {
+                if (window.toastManager.interval) {
+                    window.toastManager.stopToastInterval();
+                    document.getElementById('toggleButton').textContent = 'Start Alerts';
+                    document.getElementById('toggleButton').classList.remove('btn-danger');
+                    document.getElementById('toggleButton').classList.add('btn-success');
+                } else {
+                    window.toastManager.startToastInterval();
+                    document.getElementById('toggleButton').textContent = 'Stop Alerts';
+                    document.getElementById('toggleButton').classList.remove('btn-success');
+                    document.getElementById('toggleButton').classList.add('btn-danger');
+                }
+            }
+        }
+
+        function clearToasts() {
+            if (window.toastManager) {
+                window.toastManager.clearAllToasts();
+            }
+        }
+
+        function showSampleToast() {
+            if (window.toastManager) {
+                window.showSampleToast();
+            }
+        }
+
+// Toast Notification System - Enhanced with Real-time Dashboard Updates
+class ToastManager {
+    constructor() {
+        this.container = this.createContainer();
+        this.anomalies = [];
+        this.interval = null;
+        this.displayedAnomalies = { high: 0, medium: 0, low: 0 };
+        this.totalDisplayed = 0;
+    }
+
+    createContainer() {
+        const container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+        return container;
+    }
+
+    async loadAnomalies() {
+        try {
+            console.log('Fetching anomaly data from detailed_anomaly_report.json...');
+            const response = await fetch('/anomaly-data/');
+            this.anomalies = await response.json();
+            console.log(`✅ Successfully loaded ${this.anomalies.length} vehicle anomalies from JSON file`);
+            console.log('Sample anomaly data:', this.anomalies[0]);
+            
+            // Initialize dashboard statistics
+            this.updateDashboardStats();
+            return true;
+        } catch (error) {
+            console.error('❌ Error loading vehicle anomaly data:', error);
+            this.showErrorToast('Failed to load vehicle anomaly data from detailed_anomaly_report.json');
+            return false;
+        }
+    }
+
+    updateDashboardStats() {
+        // Calculate overall statistics for the chart and initial display
+        const stats = { high: 0, medium: 0, low: 0, total: this.anomalies.length };
+        
+        this.anomalies.forEach(anomaly => {
+            const severity = anomaly.severity.toLowerCase();
+            if (severity === 'high') stats.high++;
+            else if (severity === 'medium') stats.medium++;
+            else if (severity === 'low') stats.low++;
+        });
+
+        // Update dashboard elements if they exist
+        if (window.updateStatsDisplay) {
+            window.updateStatsDisplay(stats);
+        }
+        if (window.updateChart) {
+            window.updateChart(stats);
+        }
+    }
+
+    startToastInterval() {
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+
+        if (this.anomalies.length === 0) {
+            this.showErrorToast('No anomaly data available');
+            return;
+        }
+
+        // Reset displayed counters
+        this.displayedAnomalies = { high: 0, medium: 0, low: 0 };
+        this.totalDisplayed = 0;
+        this.updateLiveCounters();
+
+        // Show first random toast immediately
+        this.showRandomAnomaly();
+
+        // Then show every 10 seconds
+        this.interval = setInterval(() => {
+            this.showRandomAnomaly();
+        }, 10000);
+    }
+
+    stopToastInterval() {
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
+        }
+    }
+
+    showRandomAnomaly() {
+        if (this.anomalies.length === 0) {
+            console.log('No anomalies to display.');
+            return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * this.anomalies.length);
+        const anomaly = this.anomalies[randomIndex];
+        const vehicleId = this.extractEquipmentId(anomaly);
+
+        console.log(`🚨 Displaying anomaly for Vehicle ID: ${vehicleId} (Index: ${randomIndex}, Severity: ${anomaly.severity})`);
+
+        // Update counters BEFORE showing the toast
+        this.incrementDisplayedCounter(anomaly.severity);
+
+        // Show the toast
+        this.showAnomalyToast(anomaly);
+    }
+
+    // Example: start showing anomalies every interval milliseconds
+    startRandomAnomalies(interval = 5000) {
+        setInterval(() => this.showRandomAnomaly(), interval);
+    }
+
+    incrementDisplayedCounter(severity) {
+        const severityLower = severity.toLowerCase();
+        if (severityLower === 'high') this.displayedAnomalies.high++;
+        else if (severityLower === 'medium') this.displayedAnomalies.medium++;
+        else if (severityLower === 'low') this.displayedAnomalies.low++;
+        
+        this.totalDisplayed++;
+        this.updateLiveCounters();
+    }
+
+    updateLiveCounters() {
+        // Update the live displayed counters on the dashboard
+        const highElement = document.getElementById('liveHighCount');
+        const mediumElement = document.getElementById('liveMediumCount');
+        const lowElement = document.getElementById('liveLowCount');
+        const totalElement = document.getElementById('liveTotalCount');
+
+        if (highElement) {
+            highElement.textContent = this.displayedAnomalies.high;
+            this.animateCounter(highElement);
+        }
+        if (mediumElement) {
+            mediumElement.textContent = this.displayedAnomalies.medium;
+            this.animateCounter(mediumElement);
+        }
+        if (lowElement) {
+            lowElement.textContent = this.displayedAnomalies.low;
+            this.animateCounter(lowElement);
+        }
+        if (totalElement) {
+            totalElement.textContent = this.totalDisplayed;
+            this.animateCounter(totalElement);
+        }
+
+        // Update live chart if function exists
+        if (window.updateLiveChart) {
+            window.updateLiveChart(this.displayedAnomalies);
+        }
+    }
+
+    animateCounter(element) {
+        // Add a pulse animation to the counter
+        element.classList.add('counter-updated');
+        setTimeout(() => {
+            element.classList.remove('counter-updated');
+        }, 600);
+    }
+
+    resetLiveCounters() {
+        this.displayedAnomalies = { high: 0, medium: 0, low: 0 };
+        this.totalDisplayed = 0;
+        this.updateLiveCounters();
+    }
+
+    showAnomalyToast(anomaly) {
+        const toast = this.createToast(anomaly);
+        this.container.appendChild(toast);
+
+        // Trigger animation
+        setTimeout(() => toast.classList.add('show'), 10);
+
+        // Auto-hide after 8 seconds
+        setTimeout(() => this.hideToast(toast), 8000);
+
+        // Limit number of visible toasts
+        this.limitVisibleToasts();
+    }
+
+    createToast(anomaly) {
+        const toast = document.createElement('div');
+        toast.className = `toast severity-${anomaly.severity.toLowerCase()}`;
+
+        const severityIcon = this.getSeverityIcon(anomaly.severity);
+        const topFeatures = anomaly.top_deviant_features || [];
+        const vehicleId = this.extractEquipmentId(anomaly);
+        
+        // Format the anomaly type for better readability
+        const anomalyType = this.formatAnomalyType(anomaly.anomaly_type);
+        
+        toast.innerHTML = `
+            <div class="toast-header">
+                <div class="toast-title">
+                    <span class="severity-indicator"></span>
+                    ${severityIcon} Vehicle Alert - ${anomaly.severity}
+                </div>
+                <div class="toast-time">${this.formatTime(anomaly.timestamp)}</div>
+                <button class="toast-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+            </div>
+            <div class="toast-body">
+                <strong>Vehicle ID:</strong> <span style="color: #007bff; font-weight: bold;">${vehicleId}</span><br>
+                <strong>Anomaly Score:</strong> <span style="color: ${this.getScoreColor(anomaly.anomaly_score)}">${anomaly.anomaly_score.toFixed(3)}</span><br>
+                <strong>Issue:</strong> ${anomalyType}<br>
+                <strong>Data Cluster:</strong> ${anomaly.cluster_id}<br>
+                ${topFeatures.length > 0 ? `
+                <div class="anomaly-details">
+                    <strong>Critical Sensors:</strong><br>
+                    ${topFeatures.slice(0, 3).map(feature => 
+                        `<span class="feature-deviation" style="background: ${this.getDeviationColor(feature.deviation_percentage)}">
+                            ${this.formatFeatureName(feature.feature)}: ${feature.deviation_percentage > 0 ? '+' : ''}${feature.deviation_percentage.toFixed(1)}%
+                        </span>`
+                    ).join(' ')}
+                </div>` : ''}
+            </div>
+            <div class="toast-progress" style="width: 100%"></div>
+        `;
+
+        // Add progress bar animation
+        const progressBar = toast.querySelector('.toast-progress');
+        setTimeout(() => {
+            progressBar.style.width = '0%';
+            progressBar.style.transition = 'width 8s linear';
+        }, 100);
+
+        return toast;
+    }
+
+    extractEquipmentId(anomaly) {
+        // Generate realistic Caterpillar vehicle IDs based on anomaly data
+        const catEquipmentTypes = [
+            'CAT320', 'CAT336', 'CAT349', 'CAT773', 'CAT777',  // Excavators & Trucks
+            'CAT950', 'CAT966', 'CAT980', 'CAT992',            // Wheel Loaders  
+            'CAT825', 'CAT836', 'CAT844',                      // Compactors
+            'CAT735', 'CAT745', 'CAT785'                       // Articulated Trucks
+        ];
+        
+        // Use cluster_id to determine equipment type for consistency
+        const typeIndex = anomaly.cluster_id % catEquipmentTypes.length;
+        const equipmentModel = catEquipmentTypes[typeIndex];
+        
+        // Generate consistent vehicle ID based on index
+        // Format: CAT320-V2024-1234 (Model-Year-SerialNumber)
+        const serialNumber = String(1000 + (anomaly.index % 8999)).padStart(4, '0');
+        const vehicleId = `${equipmentModel}-V2024-${serialNumber}`;
+        
+        return vehicleId;
+    }
+
+    formatAnomalyType(anomalyType) {
+        // Clean up the anomaly type text for better readability
+        return anomalyType
+            .replace(/High-Value Anomaly \(/, '')
+            .replace(/\)$/, '')
+            .replace('Multiple features elevated', 'Multiple sensors elevated')
+            .replace('max:', 'Peak deviation:')
+            .substring(0, 80) + (anomalyType.length > 80 ? '...' : '');
+    }
+
+    formatFeatureName(feature) {
+        // Convert snake_case to readable names
+        return feature
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, l => l.toUpperCase())
+            .replace('Temp', 'Temperature')
+            .replace('Pressure', 'Press.');
+    }
+
+    getScoreColor(score) {
+        if (score > 3.0) return '#dc3545'; // Red for high scores
+        if (score > 2.5) return '#fd7e14'; // Orange for medium-high
+        if (score > 2.0) return '#ffc107'; // Yellow for medium
+        return '#28a745'; // Green for low scores
+    }
+
+    getDeviationColor(percentage) {
+        const absPercentage = Math.abs(percentage);
+        if (absPercentage > 150) return 'rgba(220, 53, 69, 0.2)'; // Red background
+        if (absPercentage > 100) return 'rgba(255, 193, 7, 0.2)'; // Yellow background
+        return 'rgba(23, 162, 184, 0.2)'; // Blue background
+    }
+
+    getSeverityIcon(severity) {
+        switch (severity.toLowerCase()) {
+            case 'high': return '🚨';
+            case 'medium': return '⚠️';
+            case 'low': return '⚡';
+            default: return '📊';
+        }
+    }
+
+    formatTime(timestamp) {
+        try {
+            const date = new Date(timestamp);
+            return date.toLocaleString('en-US', { 
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+        } catch (error) {
+            return 'Unknown time';
+        }
+    }
+
+    hideToast(toast) {
+        toast.classList.add('removing');
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.parentElement.removeChild(toast);
+            }
+        }, 300);
+    }
+
+    limitVisibleToasts() {
+        const toasts = this.container.querySelectorAll('.toast:not(.removing)');
+        if (toasts.length > 5) {
+            // Remove oldest toasts if more than 5 are visible
+            for (let i = 0; i < toasts.length - 5; i++) {
+                this.hideToast(toasts[i]);
+            }
+        }
+    }
+
+    showErrorToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast severity-high';
+        
+        toast.innerHTML = `
+            <div class="toast-header">
+                <div class="toast-title">
+                    <span class="severity-indicator"></span>
+                    🚨 System Error
+                </div>
+                <button class="toast-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        `;
+
+        this.container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => this.hideToast(toast), 8000);
+    }
+
+    clearAllToasts() {
+        const toasts = this.container.querySelectorAll('.toast');
+        toasts.forEach(toast => this.hideToast(toast));
+    }
+}
+
+// Global toast manager instance
+let toastManager;
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', async function() {
+    toastManager = new ToastManager();
+    
+    // Load anomalies and start showing random toasts
+    const loaded = await toastManager.loadAnomalies();
+    if (loaded) {
+        toastManager.startToastInterval();
+        console.log('Toast system initialized with real-time dashboard updates');
+    }
+});
+
+// Enhanced control functions for the dashboard
+function toggleToasts() {
+    if (toastManager.interval) {
+        toastManager.stopToastInterval();
+        document.getElementById('toggleButton').textContent = 'Start Alerts';
+        document.getElementById('toggleButton').classList.remove('btn-danger');
+        document.getElementById('toggleButton').classList.add('btn-success');
+    } else {
+        toastManager.startToastInterval();
+        document.getElementById('toggleButton').textContent = 'Stop Alerts';
+        document.getElementById('toggleButton').classList.remove('btn-success');
+        document.getElementById('toggleButton').classList.add('btn-danger');
+    }
+}
+
+function clearToasts() {
+    toastManager.clearAllToasts();
+}
+
+function resetCounters() {
+    if (toastManager) {
+        toastManager.resetLiveCounters();
+    }
+}
+
+function showSampleToast() {
+    if (toastManager && toastManager.anomalies.length > 0) {
+        // Show a random real anomaly as sample
+        toastManager.showRandomAnomaly();
+    } else {
+        // Fallback sample if no data loaded
+        const sampleAnomaly = {
+            index: 999,
+            anomaly_score: 3.456,
+            anomaly_type: "Sample High-Value Anomaly (Multiple features elevated, max: engine_temp +185.2%)",
+            severity: "HIGH",
+            cluster_id: 2,
+            timestamp: new Date().toISOString(),
+            top_deviant_features: [
+                { feature: "engine_temp", deviation_percentage: 185.2 },
+                { feature: "oil_pressure", deviation_percentage: -156.7 },
+                { feature: "fuel_level", deviation_percentage: 234.1 }
+            ]
+        };
+        toastManager.incrementDisplayedCounter(sampleAnomaly.severity);
+        toastManager.showAnomalyToast(sampleAnomaly);
+    }
+}
+
 </script>
+
 </body>
 </html>
