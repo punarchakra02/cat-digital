@@ -1385,10 +1385,10 @@
                 Demand Forecast</div>
             <div class="section-controls">
                 <select id="forecast-equipment-type" class="form-control">
-                    <option value="Bulldozer">🚜 Bulldozer</option>
-                    <option value="Excavator">🏗️ Excavator</option>
-                    <option value="Loader">🚛 Loader</option>
-                    <option value="Crane">🏗️ Crane</option>
+                    <option value="Bulldozer">Bulldozer</option>
+                    <option value="Excavator">Excavator</option>
+                    <option value="Loader">Loader</option>
+                    <option value="Crane">Crane</option>
                 </select>
             </div>
         </div>
@@ -1399,11 +1399,11 @@
         </div>
     </div>
 
-    <!-- Real-Time Health Chart -->
+    <!-- Health Overview Section -->
     <div class="section">
         <div class="section-header" onclick="toggleSection(this)">
             <div class="collapsible-arrow">▼</div>
-            <div class="section-title">Real-Time Equipment Health Overview</div>
+            <div class="section-title">Equipment Health Overview</div>
         </div>
         <div class="dashboard-grid">
             <!-- Control Panel -->
@@ -1493,6 +1493,10 @@
                 </div>
             </div>
         </div>
+        <div class="section-content">
+            <div style="max-width: 500px; margin: 0 auto;">
+                <canvas id="healthChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -1547,9 +1551,14 @@
     <div class="modal-box">
         <h3>🔍 Scan QR Code to Check In</h3>
         <div id="checkin-qr-reader" style="width:300px; margin:10px auto; border-radius: 8px; overflow: hidden;"></div>
-        <button class="btn btn-danger" onclick="closeCheckinQr()">❌ Cancel</button>
+        <button class="btn btn-danger" onclick="closeCheckinQr()">Cancel</button>
     </div>
 </div>
+
+<!-- Hidden data for charts -->
+<script id="health-chart-data" type="application/json">
+    {{ health_chart_data|safe }}
+</script>
 
 <script>
 function showQrScanner() {
@@ -1614,6 +1623,46 @@ window.onload = function() {
             }
         });
     }
+    // Initialize health chart if element exists
+    const healthChartData = document.getElementById('health-chart-data');
+    const healthChartElement = document.getElementById('healthChart');
+    
+    if (healthChartData && healthChartElement) {
+        try {
+            const healthData = JSON.parse(healthChartData.textContent);
+            const ctx = healthChartElement.getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: healthData.labels,
+                    datasets: [{
+                        data: healthData.data,
+                        backgroundColor: ['#20bf6b', '#ffd700', '#ff4757', '#3742fa'],
+                        borderWidth: 3,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12,
+                                    weight: 600
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        } catch (error) {
+            console.error("Error initializing health chart:", error);
+        }
+    }
     
     // Initialize forecast section
     const forecastSelect = document.getElementById('forecast-equipment-type');
@@ -1621,6 +1670,14 @@ window.onload = function() {
         forecastSelect.addEventListener('change', handleForecastEquipmentChange);
         // Load initial forecast data
         handleForecastEquipmentChange();
+    }
+    const forecastSelect = document.getElementById('forecast-equipment-type');
+    if (forecastSelect) {
+        forecastSelect.addEventListener('change', handleForecastEquipmentChange);
+        // Load initial forecast data
+        handleForecastEquipmentChange();
+    } else {
+        console.error("Forecast equipment type dropdown not found");
     }
     
     // Initialize all sections as expanded
@@ -1890,6 +1947,31 @@ function handleForecastEquipmentChange() {
     if (!equipmentTypeElement || !forecastContainer) return;
     
     const equipmentType = equipmentTypeElement.value;
+// This function is not used - we're using the function below
+// function handleForecastEquipmentChange() {
+//     // This was a placeholder that's been replaced by the actual implementation below
+// }
+
+// Helper: Get CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// ---------------- Forecast Functionality ----------------
+function handleForecastEquipmentChange() {
+    const equipmentType = document.getElementById('forecast-equipment-type').value;
+    const forecastContainer = document.getElementById('forecast-container');
     
     // Show loading indicator with fancy animation
     forecastContainer.innerHTML = `

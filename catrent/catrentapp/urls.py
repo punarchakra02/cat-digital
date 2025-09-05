@@ -13,4 +13,5 @@ urlpatterns = [
     path('', views.rental_dashboard, name="rental_dashboard"),
     path('anomaly-data/', views.anomaly_data, name="anomaly_data"),
     path("add-operator/", views.add_operator, name="add_operator"),
+    
 ]
